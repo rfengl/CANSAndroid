@@ -32,8 +32,6 @@ public class BaseTableFragment extends BaseFragment {
     public BaseTableFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static BaseTableFragment newInstance(int columnCount) {
         BaseTableFragment fragment = new BaseTableFragment();
         Bundle args = new Bundle();
