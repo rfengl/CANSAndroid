@@ -52,9 +52,9 @@ public class BaseActivity extends AppCompatActivity implements SwipeRefreshLayou
         refresh(mSwipeRefresh);
     }
 
-    protected String getInstructionUrl() {
-        return null;
-    }
+//    protected String getInstructionUrl() {
+//        return null;
+//    }
 
     @Override
     public void onRefresh() {
