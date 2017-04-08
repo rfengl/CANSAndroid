@@ -136,10 +136,10 @@ public class BaseEditFragment extends BaseFragment {
                 }
             }
 
-            for (BaseFormField field : getFields()) {
-                if (field.required)
-                    field.validate();
-            }
+//            for (BaseFormField field : getFields()) {
+//                if (field.required)
+//                    field.validate();
+//            }
 
             mScrollView.setFocusableInTouchMode(true);
             mScrollView.requestFocus();

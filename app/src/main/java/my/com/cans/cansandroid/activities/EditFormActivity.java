@@ -255,18 +255,22 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
     protected void refresh(final SwipeRefreshLayout swipeRefreshLayout) {
         MobileAPIResponse.FormResult request = new MobileAPIResponse().new FormResult();
         request.id = getKey();
-        new MyHTTP(this).call(MobileAPI.class).getForm(request).enqueue(new BaseAPICallback<MobileAPIResponse.FormResponse>(this) {
-            @Override
-            public void onResponse(Call<MobileAPIResponse.FormResponse> call, Response<MobileAPIResponse.FormResponse> response) {
-                super.onResponse(call, response);
 
-                MobileAPIResponse.FormResponse resp = response.body();
-                if (resp != null && resp.Succeed) {
-                    mResult = resp.Result;
-                    EditFormActivity.super.refresh(swipeRefreshLayout);
+        if (request.id == null)
+            EditFormActivity.super.refresh(swipeRefreshLayout);
+        else
+            new MyHTTP(this).call(MobileAPI.class).getForm(request).enqueue(new BaseAPICallback<MobileAPIResponse.FormResponse>(this) {
+                @Override
+                public void onResponse(Call<MobileAPIResponse.FormResponse> call, Response<MobileAPIResponse.FormResponse> response) {
+                    super.onResponse(call, response);
+
+                    MobileAPIResponse.FormResponse resp = response.body();
+                    if (resp != null && resp.Succeed) {
+                        mResult = resp.Result;
+                        EditFormActivity.super.refresh(swipeRefreshLayout);
+                    }
                 }
-            }
-        });
+            });
     }
 
     private FormModel mFormModel;

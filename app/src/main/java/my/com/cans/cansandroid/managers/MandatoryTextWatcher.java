@@ -50,8 +50,9 @@ public class MandatoryTextWatcher implements TextWatcher {
                 layout.setError("");
                 layout.setErrorEnabled(false);
             } else {
-                layout.setError(view.getContext().getString(R.string.the_field_is_required));
                 layout.setErrorEnabled(true);
+                layout.setErrorTextAppearance(R.style.error);
+                layout.setError(view.getContext().getString(R.string.the_field_is_required));
             }
         }
 
