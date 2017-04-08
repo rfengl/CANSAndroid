@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_form"
+            android:icon="@drawable/ic_check"
+            android:title="@string/fill_form" />
+        <item
+            android:id="@+id/nav_report"
+            android:icon="@drawable/ic_assignment"
+            android:title="@string/fill_report" />
+    </group>
+
+    <item android:title="@string/action">
+        <menu>
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_lock_outline"
+                android:title="@string/logout" />
+        </menu>
+    </item>
+
+</menu>

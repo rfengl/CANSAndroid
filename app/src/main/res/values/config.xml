@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="date_format">dd MMM yyyy</string>
+    <string name="time_format">HH:mm</string>
+    <string name="date_time_format">dd MMM yyyy HH:mm</string>
+    <string name="ms_date_time_format">yyyy-MM-dd\'T\'HH:mm:ss</string>
+    <string name="web_base_url_my">http://14.102.146.195:8888/api</string>
+</resources>

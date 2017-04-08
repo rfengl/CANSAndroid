@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">CANS</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!--Special words-->
+    <string name="nilai_ampere">Nilai Ampere (A)</string>
+    <string name="baik">Baik</string>
+    <string name="fill_form">Fill Form</string>
+    <string name="fill_report">Fill Report</string>
+    <string name="rosak">Rosak</string>
+    <string name="sila_nyatakan_kerosakan">sila nyatakan kerosakan jika ada</string>
+    <string name="tarikh_kablikasi">Tarikh kablikasi</string>
+
+    <!--Common words-->
+    <string name="access_denied">Access denied...</string>
+    <string name="action">Action</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="call">Call</string>
+    <string name="camera">Camera</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
+    <string name="close">Close</string>
+    <string name="confirm">Confirm</string>
+    <string name="crop_pic">Crop Picture</string>
+    <string name="helper">Helper</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="photo">Photo</string>
+    <string name="processing">Progressing... Please wait...</string>
+    <string name="save">Save</string>
+    <string name="select">- Select -</string>
+    <string name="the_field_is_required">This field is required</string>
+    <string name="uploading_image">Uploading image...</string>
+</resources>
