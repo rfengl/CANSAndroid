@@ -29,6 +29,10 @@
             android:name=".activities.EditFormActivity"
             android:label="@string/fill_form"
             android:parentActivityName=".activities.MainActivity" />
+        <activity
+            android:name=".activities.EditReportActivity"
+            android:label="@string/fill_report"
+            android:parentActivityName=".activities.MainActivity" />
     </application>
 
 </manifest>
