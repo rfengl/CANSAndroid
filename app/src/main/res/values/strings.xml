@@ -9,11 +9,13 @@
     <!--Special words-->
     <string name="nilai_ampere">Nilai Ampere (A)</string>
     <string name="baik">Baik</string>
-    <string name="fill_form">Fill Form</string>
-    <string name="fill_report">Fill Report</string>
+    <string name="fill_form">Pemeriksaan Peralatan Elektrikal</string>
+    <string name="fill_report">Breakdown Report</string>
     <string name="rosak">Rosak</string>
+    <string name="selesai">Selesai</string>
     <string name="sila_nyatakan_kerosakan">sila nyatakan kerosakan jika ada</string>
     <string name="tarikh_kablikasi">Tarikh kablikasi</string>
+    <string name="tidak">Tidak</string>
 
     <!--Common words-->
     <string name="access_denied">Access denied...</string>
@@ -29,10 +31,13 @@
     <string name="helper">Helper</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
+    <string name="no">No</string>
     <string name="photo">Photo</string>
     <string name="processing">Progressing... Please wait...</string>
+    <string name="remarks">Remarks</string>
     <string name="save">Save</string>
     <string name="select">- Select -</string>
     <string name="the_field_is_required">This field is required</string>
     <string name="uploading_image">Uploading image...</string>
+    <string name="yes">Yes</string>
 </resources>
