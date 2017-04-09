@@ -4,7 +4,6 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -21,11 +20,23 @@ public interface MobileAPI {
     @GET("TestInput")
     Call<MobileAPIResponse.FormResponse> testInput();
 
+    @GET("TestReport")
+    Call<MobileAPIResponse.ReportResponse> testReport();
+
     @POST("UpdateForm")
     Call<MobileAPIResponse.FormResponse> updateForm(@Body MobileAPIResponse.FormResult model);
 
     @POST("GetForm")
-    Call<MobileAPIResponse.FormResponse> getForm(@Body MobileAPIResponse.FormResult model);
+    Call<MobileAPIResponse.FormResponse> getForm(@Body MobileAPIResponse.IdResult model);
+
+    @POST("GetForm")
+    Call<MobileAPIResponse.FormResponse> getForms();
+
+    @POST("UpdateReport")
+    Call<MobileAPIResponse.ReportResponse> updateReport(@Body MobileAPIResponse.ReportResult model);
+
+    @POST("GetReport")
+    Call<MobileAPIResponse.ReportResponse> getReport(@Body MobileAPIResponse.IdResult model);
 
     @POST("UploadImages")
     @Multipart

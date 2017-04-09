@@ -18,6 +18,10 @@ public class MobileAPIResponse {
         public String key;
     }
 
+    public class IdResult {
+        public String id;
+    }
+
     public class UploadResponse extends BaseAPIResponse {
         public UploadResult Result;
     }
@@ -28,6 +32,10 @@ public class MobileAPIResponse {
 
     public class FormResponse extends BaseAPIResponse {
         public FormResult Result;
+    }
+
+    public class FormsResponse extends BaseAPIResponse {
+        public FormResult[] Result;
     }
 
     public class FormResult {
@@ -67,5 +75,37 @@ public class MobileAPIResponse {
         public String Remarks;
         public Date Tarikh;
         public Double Nilai;
+    }
+
+    public class ReportResponse extends BaseAPIResponse {
+        public ReportResult Result;
+    }
+
+    public class ReportsResponse extends BaseAPIResponse {
+        public ReportResult[] Result;
+    }
+
+    public class ReportResult {
+        public String id;
+        public String Lokasi;
+        public String Kawasan;
+        public Date TarikhMula;
+        public Date TarikhTamat;
+        public String BreakdownDetails;
+        public String RootCaused;
+        public String SystemBreakdownType;
+        public String EquipmentName;
+        public String SeverityOfAffectedProcess;
+        public String SitePreventionActionTaken;
+        public String ReportedBy;
+        public String ActionToBeTaken;
+        public FormData KeyInDataSystem;
+        public FormData EDOApproval;
+        public FormData NotificationCPPBD;
+        public FormData MWOIssued;
+        public FormData WorkCompletion;
+        public FormData Others;
+        public Boolean Selesai;
+        public long _ts;
     }
 }
