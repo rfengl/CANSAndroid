@@ -74,6 +74,13 @@ public class MainActivity extends BaseActivity
         startActivity(intent);
     }
 
+    protected void gotoEditReport(String key) {
+        Intent intent = new Intent(this, EditReportActivity.class);
+        if (key != null && !key.isEmpty())
+            intent.putExtra("key", key);
+        startActivity(intent);
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -115,7 +122,7 @@ public class MainActivity extends BaseActivity
         if (id == R.id.nav_form) {
             gotoEditForm("9ed4fdbc-0e40-4074-9b24-b4f9f3369761");
         } else if (id == R.id.nav_report) {
-
+            gotoEditReport("test");
         } else if (id == R.id.nav_logout) {
             CANSInfo db = new CANSInfo(this);
             T_User user = db.getUser();

@@ -253,7 +253,7 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
 
     @Override
     protected void refresh(final SwipeRefreshLayout swipeRefreshLayout) {
-        MobileAPIResponse.FormResult request = new MobileAPIResponse().new FormResult();
+        MobileAPIResponse.IdResult request = new MobileAPIResponse().new IdResult();
         request.id = getKey();
 
         if (request.id == null)
@@ -423,8 +423,10 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
                 if (inputLayout != null) {
                     EditText editText = inputLayout.getEditText();
                     if (suis instanceof SuisRemarks) {
-                        if (editText.getVisibility() == View.VISIBLE)
+                        if (editText.getVisibility() != View.GONE)
                             ((SuisRemarks) suis).remarks = editText.getText().toString();
+                        else
+                            ((SuisRemarks) suis).remarks = null;
                     } else if (suis instanceof SuisTarikh)
                         ((SuisTarikh) suis).tarikhKalibrasi = ((DateTimePicker) editText).getDate();
                     else if (suis instanceof SuisAmpere)
