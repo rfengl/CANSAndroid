@@ -29,14 +29,17 @@ public interface MobileAPI {
     @POST("GetForm")
     Call<MobileAPIResponse.FormResponse> getForm(@Body MobileAPIResponse.IdResult model);
 
-    @POST("GetForm")
-    Call<MobileAPIResponse.FormResponse> getForms();
+    @POST("GetForms")
+    Call<MobileAPIResponse.FormsResponse> getForms();
 
     @POST("UpdateReport")
     Call<MobileAPIResponse.ReportResponse> updateReport(@Body MobileAPIResponse.ReportResult model);
 
     @POST("GetReport")
     Call<MobileAPIResponse.ReportResponse> getReport(@Body MobileAPIResponse.IdResult model);
+
+    @POST("GetReports")
+    Call<MobileAPIResponse.ReportsResponse> getReports();
 
     @POST("UploadImages")
     @Multipart

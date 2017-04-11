@@ -96,7 +96,6 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
         return item;
     }
 
-
     @Override
     public View buildControl(BaseFormField field) {
         View control = field.control;

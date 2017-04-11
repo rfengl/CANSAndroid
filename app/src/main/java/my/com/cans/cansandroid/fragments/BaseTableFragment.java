@@ -66,10 +66,14 @@ public class BaseTableFragment extends BaseFragment {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             else
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-
-            refresh(null);
         }
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refresh(null);
     }
 
     @Override

@@ -8,5 +8,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="LinearLayoutManager"
-    tools:context="my.carfix.oneworks.fragments.BaseViewFragment"
+    tools:context="my.com.cans.cansandroid.fragments.BaseViewFragment"
     tools:listitem="@layout/fragment_baseview" />

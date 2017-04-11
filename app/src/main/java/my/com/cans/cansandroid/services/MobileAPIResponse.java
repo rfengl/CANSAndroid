@@ -57,6 +57,9 @@ public class MobileAPIResponse {
         public FormData[] FormData;
         public String PreparedBy;
         public long _ts;
+        public Date getCreatedDate(){
+            return new Date(_ts * 1000);
+        }
 
         public FormData getFormData(FormGroup group, FormField field) {
             for (int i = 0; i < FormData.length; i++) {

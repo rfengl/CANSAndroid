@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,6 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import my.com.cans.cansandroid.R;
+import my.com.cans.cansandroid.fragments.BaseFragment;
+import my.com.cans.cansandroid.fragments.FormsFragment;
+import my.com.cans.cansandroid.fragments.ReportsFragment;
 import my.com.cans.cansandroid.objects.CANSInfo;
 import my.com.cans.cansandroid.objects.dbo.T_User;
 import my.com.cans.cansandroid.services.BaseAPICallback;
@@ -64,7 +69,9 @@ public class MainActivity extends BaseActivity
             @Override
             public void onResponse(Call<BaseAPIResponse> call, Response<BaseAPIResponse> response) {
                 BaseAPIResponse resp = response.body();
-                if (!resp.Succeed)
+                if (resp.Succeed) {
+                    switchFragment("list", new FormsFragment());
+                } else
                     MainActivity.this.gotoLogin();
             }
         });
@@ -89,6 +96,14 @@ public class MainActivity extends BaseActivity
         startActivity(intent);
     }
 
+    protected void gotoForms() {
+        switchFragment("forms", new FormsFragment());
+    }
+
+    protected void gotoReports() {
+        switchFragment("reports", new ReportsFragment());
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -99,6 +114,14 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    private void switchFragment(String tag, BaseFragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+//        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.content_fragment, fragment, tag);
+        transaction.commit();
+    }
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.
@@ -128,9 +151,9 @@ public class MainActivity extends BaseActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_form) {
-            gotoEditForm("9ed4fdbc-0e40-4074-9b24-b4f9f3369761");
+            gotoForms();
         } else if (id == R.id.nav_report) {
-            gotoEditReport("test");
+            gotoReports();
         } else if (id == R.id.nav_logout) {
             CANSInfo db = new CANSInfo(this);
             T_User user = db.getUser();

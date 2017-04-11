@@ -26,14 +26,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <my.carfix.oneworks.controls.CustomImageView
+            <my.com.cans.cansandroid.controls.CustomImageView
                 android:id="@+id/left_image"
                 android:layout_width="@dimen/list_view_icon_width"
                 android:layout_height="@dimen/list_view_icon_height"
                 android:layout_marginRight="@dimen/text_margin"
                 android:scaleType="fitXY" />
 
-            <my.carfix.oneworks.controls.CustomTextView
+            <my.com.cans.cansandroid.controls.CustomTextView
                 android:id="@+id/content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
 
         </LinearLayout>
 
-        <my.carfix.oneworks.controls.CustomImageView
+        <my.com.cans.cansandroid.controls.CustomImageView
             android:id="@+id/content_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
