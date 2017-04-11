@@ -60,7 +60,11 @@ public class MainActivity extends BaseActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         verifyUser();
     }
 
@@ -70,7 +74,7 @@ public class MainActivity extends BaseActivity
             public void onResponse(Call<BaseAPIResponse> call, Response<BaseAPIResponse> response) {
                 BaseAPIResponse resp = response.body();
                 if (resp.Succeed) {
-                    switchFragment("list", new FormsFragment());
+                    gotoForms();
                 } else
                     MainActivity.this.gotoLogin();
             }
@@ -97,10 +101,12 @@ public class MainActivity extends BaseActivity
     }
 
     protected void gotoForms() {
+        this.setTitle(R.string.fill_form);
         switchFragment("forms", new FormsFragment());
     }
 
     protected void gotoReports() {
+        this.setTitle(R.string.fill_report);
         switchFragment("reports", new ReportsFragment());
     }
 
