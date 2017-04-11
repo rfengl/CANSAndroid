@@ -139,7 +139,7 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
             ActionTaken actionTaken = (ActionTaken) field.value;
 
             CustomImageView imgBaik = new CustomImageView(this);
-            if (actionTaken.selected) {
+            if (actionTaken.selected != null && actionTaken.selected) {
                 imgBaik.setImageResource(R.drawable.ic_check);
                 if (hasRemarks)
                     editText.setVisibility(View.VISIBLE);
@@ -156,7 +156,7 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
             linearLayout.addView(new View(this), new LinearLayout.LayoutParams(getPixel(R.dimen.short_label_width), ViewGroup.LayoutParams.WRAP_CONTENT));
 
             CustomImageView imgRosak = new CustomImageView(this);
-            if (actionTaken.selected)
+            if (actionTaken.selected != null && actionTaken.selected)
                 imgRosak.setImageResource(R.drawable.ic_check_box_outline);
             else
                 imgRosak.setImageResource(R.drawable.ic_check);

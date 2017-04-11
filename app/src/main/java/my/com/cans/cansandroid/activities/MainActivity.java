@@ -31,8 +31,16 @@ public class MainActivity extends BaseActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab_report = (FloatingActionButton) findViewById(R.id.fab_report);
+        fab_report.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gotoEditReport(null);
+            }
+        });
+
+        FloatingActionButton fab_form = (FloatingActionButton) findViewById(R.id.fab_form);
+        fab_form.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 gotoEditForm(null);
