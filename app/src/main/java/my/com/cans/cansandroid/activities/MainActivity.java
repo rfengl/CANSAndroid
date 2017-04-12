@@ -13,6 +13,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import my.com.cans.cansandroid.R;
 import my.com.cans.cansandroid.fragments.BaseFragment;
@@ -62,6 +64,15 @@ public class MainActivity extends BaseActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+
+        ImageView imageView = (ImageView) header.findViewById(R.id.imageView);
+        imageView.setImageResource(R.mipmap.ic_launcher);
+
+        T_User user = new CANSInfo(this).getUser();
+        TextView userName = (TextView) header.findViewById(R.id.user_name);
+        userName.setText(user.loginID);
     }
 
     @Override
