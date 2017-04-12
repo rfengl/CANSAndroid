@@ -1,6 +1,5 @@
 package my.com.cans.cansandroid.activities;
 
-import android.content.Context;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -8,7 +7,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -92,7 +90,7 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
     private MobileAPIResponse.FormData buildFormData(ActionTaken model) {
         MobileAPIResponse.FormData item = new MobileAPIResponse().new FormData();
         item.Baik = model.selected;
-        item.Remarks = model.remarks;
+//        item.Remarks = model.remarks;
         return item;
     }
 
@@ -116,7 +114,7 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
             if (field.value == null)
                 field.value = new ActionTaken();
 
-            boolean hasRemarks = field.name != "selesai";
+//            boolean hasRemarks = field.name != "selesai";
 
             TextInputLayout layout = (TextInputLayout) field.control.findViewWithTag(field.name);
             EditText editText = layout.getEditText();
@@ -140,16 +138,16 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
             CustomImageView imgBaik = new CustomImageView(this);
             if (actionTaken.selected != null && actionTaken.selected) {
                 imgBaik.setImageResource(R.drawable.ic_check);
-                if (hasRemarks)
-                    editText.setVisibility(View.VISIBLE);
+//                if (hasRemarks)
+//                    editText.setVisibility(View.VISIBLE);
             } else
                 imgBaik.setImageResource(R.drawable.ic_check_box_outline);
             linearLayout.addView(imgBaik);
             CustomTextView labelBaik = new CustomTextView(this);
-            if (hasRemarks)
-                labelBaik.setText(getString(R.string.yes));
-            else
+            if (field.name == "selesai")
                 labelBaik.setText(getString(R.string.selesai));
+            else
+                labelBaik.setText(getString(R.string.yes));
             linearLayout.addView(labelBaik, marginLeftLayoutParams);
 
             linearLayout.addView(new View(this), new LinearLayout.LayoutParams(getPixel(R.dimen.short_label_width), ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -161,10 +159,10 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
                 imgRosak.setImageResource(R.drawable.ic_check);
             linearLayout.addView(imgRosak);
             CustomTextView labelRosak = new CustomTextView(this);
-            if (hasRemarks)
-                labelRosak.setText(getString(R.string.no));
-            else
+            if (field.name == "selesai")
                 labelRosak.setText(getString(R.string.tidak));
+            else
+                labelRosak.setText(getString(R.string.no));
             linearLayout.addView(labelRosak, marginLeftLayoutParams);
 
             labelBaik.setTag(field);
@@ -198,19 +196,19 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
             ((ImageView) linearLayout.getChildAt(3)).setImageResource(R.drawable.ic_check);
         }
 
-        boolean hasRemarks = field.name != "selesai";
-        if (hasRemarks) {
-            TextInputLayout layout = (TextInputLayout) field.control.findViewWithTag(field.name);
-            EditText editText = layout.getEditText();
-            if (actionTaken.selected) {
-                editText.setVisibility(View.VISIBLE);
-                editText.requestFocus();
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-            } else {
-                editText.setVisibility(View.GONE);
-            }
-        }
+//        boolean hasRemarks = field.name != "selesai";
+//        if (hasRemarks) {
+//            TextInputLayout layout = (TextInputLayout) field.control.findViewWithTag(field.name);
+//            EditText editText = layout.getEditText();
+//            if (actionTaken.selected) {
+//                editText.setVisibility(View.VISIBLE);
+//                editText.requestFocus();
+//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+//            } else {
+//                editText.setVisibility(View.GONE);
+//            }
+//        }
     }
 
     private MobileAPIResponse.ReportResult mResult;
@@ -273,7 +271,7 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
     private ActionTaken buildActionTaken(MobileAPIResponse.FormData formData) {
         ActionTaken item = new ActionTaken();
         item.selected = formData.Baik;
-        item.remarks = formData.Remarks;
+//        item.remarks = formData.Remarks;
         return item;
     }
 
@@ -300,17 +298,17 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
             if (ActionTaken.class.isAssignableFrom(this.field.getType())) {
                 ActionTaken item = (ActionTaken) this.value;
 
-                if (this.control == null)
-                    return item;
+//                if (this.control == null)
+//                    return item;
 
-                TextInputLayout inputLayout = (TextInputLayout) this.control.findViewWithTag(this.name);
-                if (inputLayout != null) {
-                    EditText editText = inputLayout.getEditText();
-                    if (editText.getVisibility() != View.GONE)
-                        item.remarks = editText.getText().toString();
-                    else
-                        item.remarks = null;
-                }
+//                TextInputLayout inputLayout = (TextInputLayout) this.control.findViewWithTag(this.name);
+//                if (inputLayout != null) {
+//                    EditText editText = inputLayout.getEditText();
+//                    if (editText.getVisibility() != View.GONE)
+//                        item.remarks = editText.getText().toString();
+//                    else
+//                        item.remarks = null;
+//                }
 
                 return item;
             }
@@ -385,11 +383,11 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
 
     class ActionTaken {
         public Boolean selected;
-        public String remarks;
+//        public String remarks;
 
-        @Override
-        public String toString() {
-            return remarks;
-        }
+//        @Override
+//        public String toString() {
+//            return remarks;
+//        }
     }
 }
