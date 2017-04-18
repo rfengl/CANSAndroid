@@ -1,7 +1,9 @@
 package my.com.cans.cansandroid.activities;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
 
@@ -25,6 +27,12 @@ import retrofit2.Response;
  */
 
 public class LoginActivity extends EditPageActivity implements OnSubmitListener, BaseEditFragment.OnBuildControlListener {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        this.ButtonText = "Login";
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public Object buildModel() {
@@ -63,6 +71,7 @@ public class LoginActivity extends EditPageActivity implements OnSubmitListener,
             TextInputLayout txtPassword = (TextInputLayout) control.findViewWithTag(field.name);
             txtPassword.getEditText().setTransformationMethod(new AsteriskPasswordTransformationMethod());
         }
+
         return control;
     }
 
