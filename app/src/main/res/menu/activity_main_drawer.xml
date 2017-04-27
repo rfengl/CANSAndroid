@@ -10,6 +10,10 @@
             android:id="@+id/nav_report"
             android:icon="@drawable/ic_assignment"
             android:title="@string/fill_report" />
+        <item
+            android:id="@+id/nav_monitor"
+            android:icon="@drawable/ic_place"
+            android:title="@string/monitoring" />
     </group>
 
     <item android:title="@string/action">

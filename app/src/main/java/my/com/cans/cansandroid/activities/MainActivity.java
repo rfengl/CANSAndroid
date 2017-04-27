@@ -184,6 +184,11 @@ public class MainActivity extends BaseActivity
             gotoForms();
         } else if (id == R.id.nav_report) {
             gotoReports();
+        } else if (id == R.id.nav_monitor) {
+            Intent intent = new Intent(this, WebActivity.class);
+            intent.putExtra("title", "Facility Monitoring");
+            intent.putExtra("url", "http://cansiotapp.azurewebsites.net/PhoneMonitor");
+            startActivity(intent);
         } else if (id == R.id.nav_logout) {
             CANSInfo db = new CANSInfo(this);
             T_User user = db.getUser();
