@@ -26,6 +26,9 @@
             android:name=".activities.LoginActivity"
             android:label="@string/login" />
         <activity
+            android:name=".activities.WebActivity"
+            android:label="@string/monitoring" />
+        <activity
             android:name=".activities.EditFormActivity"
             android:label="@string/fill_form"
             android:parentActivityName=".activities.MainActivity" />

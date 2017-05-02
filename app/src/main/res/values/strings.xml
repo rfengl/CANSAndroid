@@ -11,6 +11,7 @@
     <string name="baik">Baik</string>
     <string name="fill_form">Pemeriksaan Peralatan Elektrikal</string>
     <string name="fill_report">Breakdown Report</string>
+    <string name="monitoring">Facility Monitoring</string>
     <string name="rosak">Rosak</string>
     <string name="selesai">Selesai</string>
     <string name="sila_nyatakan_kerosakan">sila nyatakan kerosakan jika ada</string>
