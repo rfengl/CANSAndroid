@@ -31,10 +31,12 @@
         <activity
             android:name=".activities.EditFormActivity"
             android:label="@string/fill_form"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.EditReportActivity"
             android:label="@string/fill_report"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:parentActivityName=".activities.MainActivity" />
     </application>
 

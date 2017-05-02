@@ -5,7 +5,6 @@ package my.com.cans.cansandroid.activities;
  */
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -13,7 +12,6 @@ import android.widget.LinearLayout;
 import my.com.cans.cansandroid.R;
 import my.com.cans.cansandroid.controls.CustomButton;
 import my.com.cans.cansandroid.fragments.BaseEditFragment;
-import my.com.cans.cansandroid.fragments.BaseFragment;
 import my.com.cans.cansandroid.fragments.interfaces.OnSubmitListener;
 
 public class EditPageActivity extends BaseActivity implements BaseEditFragment.OnBuildModelListener {
@@ -32,7 +30,7 @@ public class EditPageActivity extends BaseActivity implements BaseEditFragment.O
 
         if (this instanceof OnSubmitListener) {
             CustomButton doneButton = new CustomButton(this);
-            if(ButtonText == "")
+            if (ButtonText == "")
                 doneButton.setText(getString(R.string.save));
             else
                 doneButton.setText(ButtonText);
