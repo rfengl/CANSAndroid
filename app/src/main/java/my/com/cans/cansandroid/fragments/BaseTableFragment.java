@@ -55,7 +55,7 @@ public class BaseTableFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_basetable_list, container, false);
 
-        this.showProgress(R.string.uploading_image);
+        this.showProgress(R.string.processing);
 
         if (view instanceof RecyclerView == false) {
             view = view.findViewById(R.id.list);
