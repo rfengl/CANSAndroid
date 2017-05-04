@@ -1,5 +1,6 @@
 package my.com.cans.cansandroid.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,7 +25,7 @@ public class BaseTableFragment extends BaseFragment {
     protected OnTableInteractionListener mListener;
     protected OnTableBuildItemsListener mBuildItems;
     protected RecyclerView mRecycleView;
-
+    ProgressDialog mProgress;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -53,6 +54,9 @@ public class BaseTableFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_basetable_list, container, false);
+
+        this.showProgress(R.string.uploading_image);
+
         if (view instanceof RecyclerView == false) {
             view = view.findViewById(R.id.list);
         }
@@ -70,6 +74,46 @@ public class BaseTableFragment extends BaseFragment {
         return view;
     }
 
+    public void showProgress() {
+        showProgress(null);
+    }
+
+    public void showProgress(boolean ifNotProgressing) {
+        showProgress(null, ifNotProgressing);
+    }
+
+    public void showProgress(int resId) {
+        showProgress(getString(resId));
+    }
+
+    public void showProgress(int resId, boolean ifNotProgressing) {
+        showProgress(getString(resId), ifNotProgressing);
+    }
+
+    public void showProgress(String message) {
+        showProgress(message, false);
+    }
+
+    public void showProgress(String message, boolean ifNotProgressing) {
+        if (ifNotProgressing && mProgress != null) return;
+
+        if (mProgress == null)
+            mProgress = new ProgressDialog(this.getActivity());
+        if (message == null)
+            message = getString(R.string.processing);
+        mProgress.setMessage(message);
+        mProgress.setIndeterminate(false);
+        mProgress.setCancelable(false);
+        mProgress.show();
+    }
+
+    public void hideProgress() {
+        if (mProgress != null) {
+            mProgress.dismiss();
+            mProgress = null;
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -80,6 +124,7 @@ public class BaseTableFragment extends BaseFragment {
     public void refresh(SwipeRefreshLayout swipeRefreshLayout) {
         super.refresh(swipeRefreshLayout);
         mRecycleView.setAdapter(buildAdapter(buildItems(), mListener));
+        this.hideProgress();
     }
 
     protected BaseTableAdapter buildAdapter(List<BaseTableItem> items, OnTableInteractionListener listener) {
