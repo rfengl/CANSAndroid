@@ -51,11 +51,17 @@ public class WebActivity extends BaseActivity {
         webView.setScrollbarFadingEnabled(false);
 
         //setContentView(webView);
-        final Activity activity = this;
-
+        final BaseActivity activity = this;
+        activity.showProgress();
         webView.setWebViewClient(new WebViewClient() {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 Toast.makeText(activity, description, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                activity.hideProgress();
             }
         });
 
