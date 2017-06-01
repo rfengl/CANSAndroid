@@ -47,7 +47,7 @@ public class ReportsFragment extends BaseTableFragment implements OnTableInterac
         List<BaseTableItem> items = new ArrayList<>();
         for (MobileAPIResponse.ReportResult report : mReports) {
             BaseTableItem item = new BaseTableItem();
-            item.itemId = report.id;
+            item.itemId = report.ID;
             item.title = new Convert(report.TarikhMula).to() + " - " + new Convert(report.TarikhTamat).to();
             item.details = report.Lokasi;
             items.add(item);

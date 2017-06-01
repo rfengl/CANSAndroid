@@ -47,7 +47,7 @@ public class FormsFragment extends BaseTableFragment implements OnTableInteracti
         List<BaseTableItem> items = new ArrayList<>();
         for (MobileAPIResponse.FormResult form : mForms) {
             BaseTableItem item = new BaseTableItem();
-            item.itemId = form.id;
+            item.itemId = form.ID;
             item.title = new Convert(form.Tarikh).to(); //new Convert(form.getCreatedDate()).to();
             item.details = form.NamaRumahPam;
             items.add(item);

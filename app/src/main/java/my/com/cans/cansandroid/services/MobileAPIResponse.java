@@ -19,7 +19,7 @@ public class MobileAPIResponse {
     }
 
     public class IdResult {
-        public String id;
+        public String ID;
     }
 
     public class UploadResponse extends BaseAPIResponse {
@@ -39,7 +39,7 @@ public class MobileAPIResponse {
     }
 
     public class FormResult {
-        public String id;
+        public String ID;
         public Date Tarikh;
         public String NamaRumahPam;
         public String Wilayah;
@@ -56,10 +56,11 @@ public class MobileAPIResponse {
         public Double VariableSpeedSystemNilaiVoltan;
         public FormData[] FormData;
         public String PreparedBy;
-        public long _ts;
-        public Date getCreatedDate(){
-            return new Date(_ts * 1000);
-        }
+        public Date CreatedDate;
+//        public long _ts;
+//        public Date getCreatedDate(){
+//            return new Date(_ts * 1000);
+//        }
 
         public FormData getFormData(FormGroup group, FormField field) {
             for (int i = 0; i < FormData.length; i++) {
@@ -89,7 +90,7 @@ public class MobileAPIResponse {
     }
 
     public class ReportResult {
-        public String id;
+        public String ID;
         public String Lokasi;
         public String Kawasan;
         public Date TarikhMula;
@@ -102,13 +103,13 @@ public class MobileAPIResponse {
         public String SitePreventionActionTaken;
         public String ReportedBy;
         public String ActionToBeTaken;
-        public FormData KeyInDataSystem;
-        public FormData EDOApproval;
-        public FormData NotificationCPPBD;
-        public FormData MWOIssued;
-        public FormData WorkCompletion;
-        public FormData Others;
+        public Boolean KeyInDataSystem;
+        public Boolean EDOApproval;
+        public Boolean NotificationCPPBD;
+        public Boolean MWOIssued;
+        public Boolean WorkCompletion;
+        public Boolean Others;
         public Boolean Selesai;
-        public long _ts;
+        public Date CreatedDate;
     }
 }

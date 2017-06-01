@@ -58,7 +58,7 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
             if (item != null) {
                 MobileAPIResponse.FormResult request = new MobileAPIResponse().new FormResult();
                 List<MobileAPIResponse.FormData> formDatas = new ArrayList<>();
-                request.id = getKey();
+                request.ID = getKey();
                 request.Tarikh = item.tarikh;
                 request.NamaRumahPam = item.namaRumahPam;
                 request.Wilayah = item.wilayah;
@@ -103,7 +103,7 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
 
                         MobileAPIResponse.FormResponse resp = response.body();
                         if (resp.Succeed) {
-                            String key = resp.Result.id;
+                            String key = resp.Result.ID;
                             if (key != null) {
                                 EditFormActivity.this.finish();
                             }
@@ -254,9 +254,9 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
     @Override
     protected void refresh(final SwipeRefreshLayout swipeRefreshLayout) {
         MobileAPIResponse.IdResult request = new MobileAPIResponse().new IdResult();
-        request.id = getKey();
+        request.ID = getKey();
 
-        if (request.id == null)
+        if (request.ID == null)
             EditFormActivity.super.refresh(swipeRefreshLayout);
         else
             new MyHTTP(this).call(MobileAPI.class).getForm(request).enqueue(new BaseAPICallback<MobileAPIResponse.FormResponse>(this) {

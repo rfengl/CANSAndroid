@@ -47,7 +47,7 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
 
             if (item != null) {
                 MobileAPIResponse.ReportResult request = new MobileAPIResponse().new ReportResult();
-                request.id = getKey();
+                request.ID = getKey();
                 request.Lokasi = item.lokasi;
                 request.Kawasan = item.kawasan;
                 request.TarikhMula = item.tarikhMula;
@@ -60,12 +60,12 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
                 request.SitePreventionActionTaken = item.sitePreventionActionTaken;
 
                 request.ActionToBeTaken = item.actionToBeTaken;
-                request.KeyInDataSystem = buildFormData(item.keyInDataSystem);
-                request.EDOApproval = buildFormData(item.edoApproval);
-                request.MWOIssued = buildFormData(item.mwoIssued);
-                request.NotificationCPPBD = buildFormData(item.notificationCPPBD);
-                request.WorkCompletion = buildFormData(item.workCompletion);
-                request.Others = buildFormData(item.others);
+                request.KeyInDataSystem = item.keyInDataSystem.selected;
+                request.EDOApproval = item.edoApproval.selected;
+                request.MWOIssued = item.mwoIssued.selected;
+                request.NotificationCPPBD = item.notificationCPPBD.selected;
+                request.WorkCompletion = item.workCompletion.selected;
+                request.Others = item.others.selected;
 
                 request.Selesai = item.selesai.selected;
 
@@ -76,7 +76,7 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
 
                         MobileAPIResponse.ReportResponse resp = response.body();
                         if (resp.Succeed) {
-                            String key = resp.Result.id;
+                            String key = resp.Result.ID;
                             if (key != null) {
                                 EditReportActivity.this.finish();
                             }
@@ -216,9 +216,9 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
     @Override
     protected void refresh(final SwipeRefreshLayout swipeRefreshLayout) {
         MobileAPIResponse.IdResult request = new MobileAPIResponse().new IdResult();
-        request.id = getKey();
+        request.ID = getKey();
 
-        if (request.id == null)
+        if (request.ID == null)
             EditReportActivity.super.refresh(swipeRefreshLayout);
         else
             new MyHTTP(this).call(MobileAPI.class).getReport(request).enqueue(new BaseAPICallback<MobileAPIResponse.ReportResponse>(this) {
@@ -262,15 +262,14 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
         mModel.workCompletion = buildActionTaken(mResult.WorkCompletion);
         mModel.others = buildActionTaken(mResult.Others);
 
-        mModel.selesai = new ActionTaken();
-        mModel.selesai.selected = mResult.Selesai;
+        mModel.selesai = buildActionTaken(mResult.Selesai);
 
         return mModel;
     }
 
-    private ActionTaken buildActionTaken(MobileAPIResponse.FormData formData) {
+    private ActionTaken buildActionTaken(Boolean formData) {
         ActionTaken item = new ActionTaken();
-        item.selected = formData.Baik;
+        item.selected = formData;
 //        item.remarks = formData.Remarks;
         return item;
     }
