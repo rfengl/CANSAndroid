@@ -52,6 +52,7 @@ public class ReportsFragment extends BaseTableFragment implements OnTableInterac
             item.details = report.Lokasi;
             items.add(item);
         }
+        
         return items;
     }
 
