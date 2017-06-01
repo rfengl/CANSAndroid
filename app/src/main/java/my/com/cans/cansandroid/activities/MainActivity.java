@@ -89,15 +89,21 @@ public class MainActivity extends BaseActivity
             mCurrentFragment.refresh(swipeRefreshLayout);
     }
 
+    private boolean mIsLogined = false;
+
     protected void verifyUser() {
         new MyHTTP(this).call(MobileAPI.class).verify().enqueue(new BaseAPICallback<BaseAPIResponse>(this) {
             @Override
             public void onResponse(Call<BaseAPIResponse> call, Response<BaseAPIResponse> response) {
                 BaseAPIResponse resp = response.body();
                 if (resp.Succeed) {
-                    gotoForms();
-                } else
+                    if (!mIsLogined)
+                        gotoForms();
+                    mIsLogined = true;
+                } else {
+                    mIsLogined = false;
                     MainActivity.this.gotoLogin();
+                }
             }
         });
     }
