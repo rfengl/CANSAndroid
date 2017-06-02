@@ -57,7 +57,9 @@ public class EditPageActivity extends BaseActivity implements BaseEditFragment.O
     @Override
     protected void refresh(SwipeRefreshLayout swipeRefreshLayout) {
         super.refresh(swipeRefreshLayout);
-        getEditFragment().refresh(null);
+        BaseEditFragment editFragment = getEditFragment();
+        if (editFragment != null)
+            editFragment.refresh(null);
     }
 
     public BaseEditFragment getEditFragment() {

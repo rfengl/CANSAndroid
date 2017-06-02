@@ -1,8 +1,16 @@
 package my.com.cans.cansandroid.activities;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.TypedValue;
 import android.view.View;
@@ -12,15 +20,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
 
 import my.com.cans.cansandroid.R;
 import my.com.cans.cansandroid.controls.CustomImageView;
+import my.com.cans.cansandroid.controls.CustomPicker;
 import my.com.cans.cansandroid.controls.CustomTextView;
 import my.com.cans.cansandroid.controls.DateTimePicker;
 import my.com.cans.cansandroid.fragments.BaseEditFragment;
 import my.com.cans.cansandroid.fragments.interfaces.OnSubmitListener;
 import my.com.cans.cansandroid.managers.Convert;
+import my.com.cans.cansandroid.managers.ValidateManager;
 import my.com.cans.cansandroid.objects.BaseFormField;
 import my.com.cans.cansandroid.objects.interfaces.Description;
 import my.com.cans.cansandroid.objects.interfaces.Order;
@@ -35,9 +46,20 @@ import retrofit2.Response;
  * Created by Rfeng on 06/04/2017.
  */
 
-public class EditReportActivity extends EditPageActivity implements OnSubmitListener, BaseEditFragment.OnBuildFieldListener, BaseEditFragment.OnBuildControlListener, BaseEditFragment.LabelWidthListener, View.OnClickListener {
+public class EditReportActivity extends EditPageActivity implements OnSubmitListener, BaseEditFragment.OnBuildFieldListener, BaseEditFragment.OnBuildControlListener, BaseEditFragment.LabelWidthListener, View.OnClickListener, CustomPicker.OnCustomPickerListerner, LocationListener {
     public String getKey() {
         return getIntent().getStringExtra("key");
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        LocationManager locationManager = (LocationManager)
+                getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
+        }
     }
 
     @Override
@@ -48,6 +70,14 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
             if (item != null) {
                 MobileAPIResponse.ReportResult request = new MobileAPIResponse().new ReportResult();
                 request.ID = getKey();
+                for (MobileAPIResponse.GetDevicesResult device : mDevices) {
+                    if (device.DeviceID.equals(item.deviceID)) {
+                        request.DeviceID = device.ID;
+                        break;
+                    }
+                }
+                if (ValidateManager.isEmptyOrNull(request.DeviceID))
+                    request.DeviceID = item.deviceID;
                 request.Lokasi = item.lokasi;
                 request.Kawasan = item.kawasan;
                 request.TarikhMula = item.tarikhMula;
@@ -213,6 +243,8 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
 
     private MobileAPIResponse.ReportResult mResult;
 
+    private MobileAPIResponse.GetDevicesResult[] mDevices;
+
     @Override
     protected void refresh(final SwipeRefreshLayout swipeRefreshLayout) {
         MobileAPIResponse.IdResult request = new MobileAPIResponse().new IdResult();
@@ -230,6 +262,23 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
                     if (resp != null && resp.Succeed) {
                         mResult = resp.Result;
                         EditReportActivity.super.refresh(swipeRefreshLayout);
+
+                        if (mResult.DeviceID != null) {
+                            MobileAPIResponse.CoordinateResult deviceIdModel = new MobileAPIResponse().new CoordinateResult();
+                            deviceIdModel.ID = mResult.DeviceID;
+                            new MyHTTP(EditReportActivity.this).call(MobileAPI.class).getDevices(deviceIdModel).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(EditReportActivity.this) {
+                                @Override
+                                public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
+                                    super.onResponse(call, response);
+
+                                    MobileAPIResponse.GetDevicesResponse resp = response.body();
+                                    if (resp != null && resp.Succeed) {
+                                        mDevices = resp.Result;
+                                        EditReportActivity.super.refresh(null);
+                                    }
+                                }
+                            });
+                        }
                     }
                 }
             });
@@ -239,10 +288,14 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
 
     @Override
     public Object buildModel() {
+        if (mModel != null)
+            return mModel;
+
         mModel = new ReportModel();
         if (mResult == null)
             return mModel;
 
+        mModel.deviceID = mResult.DeviceID;
         mModel.lokasi = mResult.Lokasi;
         mModel.kawasan = mResult.Kawasan;
         mModel.tarikhMula = mResult.TarikhMula;
@@ -283,8 +336,73 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
     public BaseFormField buildField(BaseFormField field) {
         if (ActionTaken.class.isAssignableFrom(field.field.getType())) {
             return new EditReportField(this, field.field, mModel);
+        } else if (field.name.equals("deviceID")) {
+            if (mDevices != null) {
+                field.choices = new ArrayList<>();
+                for (MobileAPIResponse.GetDevicesResult item : mDevices) {
+                    if (item.ID.equals(field.value) || ValidateManager.isEmptyOrNull(field.value)) {
+                        if (ValidateManager.isEmptyOrNull(field.value)) {
+                            mModel.deviceID = item.DeviceID;
+                            mModel.kawasan = item.Kawasan;
+                            mModel.lokasi = item.Lokasi;
+                        }
+                        field.value = item.DeviceID;
+                    }
+                    field.choices.add(item.DeviceID);
+                }
+            }
         }
         return field;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (mDevices == null) {
+            MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
+            request.Latitude = location.getLatitude();
+            request.Longitude = location.getLongitude();
+            new MyHTTP(this).call(MobileAPI.class).getDevices(request).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(this) {
+                @Override
+                public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
+                    super.onResponse(call, response);
+
+                    MobileAPIResponse.GetDevicesResponse resp = response.body();
+                    if (resp != null && resp.Succeed) {
+                        mDevices = resp.Result;
+                        EditReportActivity.super.refresh(null);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    @Override
+    public void onSelected(CustomPicker picker, String oldValue, String newValue) {
+        if (!ValidateManager.isEmptyOrNull(newValue) && !newValue.equals(oldValue)) {
+            for (MobileAPIResponse.GetDevicesResult item : mDevices) {
+                if (item.DeviceID.equals(newValue)) {
+                    mModel.kawasan = item.Kawasan;
+                    mModel.lokasi = item.Lokasi;
+                    super.refresh(null);
+                    break;
+                }
+            }
+        }
     }
 
     class EditReportField extends BaseFormField {
@@ -316,6 +434,10 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
     }
 
     class ReportModel {
+        @NonNull
+        @Order(1)
+        @Description("Device ID")
+        public String deviceID;
         @NonNull
         @Order(1)
         public String lokasi;

@@ -22,6 +22,12 @@ public class MobileAPIResponse {
         public String ID;
     }
 
+    public class CoordinateResult {
+        public String ID;
+        public Double Latitude;
+        public Double Longitude;
+    }
+
     public class UploadResponse extends BaseAPIResponse {
         public UploadResult Result;
     }
@@ -40,6 +46,7 @@ public class MobileAPIResponse {
 
     public class FormResult {
         public String ID;
+        public String DeviceID;
         public Date Tarikh;
         public String NamaRumahPam;
         public String Wilayah;
@@ -91,6 +98,7 @@ public class MobileAPIResponse {
 
     public class ReportResult {
         public String ID;
+        public String DeviceID;
         public String Lokasi;
         public String Kawasan;
         public Date TarikhMula;
@@ -111,5 +119,36 @@ public class MobileAPIResponse {
         public Boolean Others;
         public Boolean Selesai;
         public Date CreatedDate;
+    }
+
+    public class GetDevicesResponse extends  BaseAPIResponse {
+        public GetDevicesResult[] Result;
+    }
+
+    public class GetDevicesResult {
+        public String ID;
+        public String DeviceID;
+        public String Kawasan;
+        public String Lokasi;
+        public String AdditionalInfo;
+    }
+
+    public class GetDeviceValueResponse extends  BaseAPIResponse {
+        public GetDeviceValueResult Result;
+    }
+
+    public class GetDeviceValueResult {
+        public String ID;
+        public String DeviceID;
+        public Double VoltageL1;
+        public Double VoltageL2;
+        public Double VoltageL3;
+        public Double CurrentP1;
+        public Double CurrentP2;
+        public Double CurrentP3;
+        public Double ActivePower;
+        public Double PowerFactor;
+        public String PanelDoorStatus;
+        public String PumpRunStatus;
     }
 }

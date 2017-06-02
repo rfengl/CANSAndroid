@@ -1,9 +1,16 @@
 package my.com.cans.cansandroid.activities;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.InputType;
 import android.util.TypedValue;
@@ -17,16 +24,19 @@ import android.widget.LinearLayout;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import my.com.cans.cansandroid.R;
 import my.com.cans.cansandroid.controls.CustomImageView;
+import my.com.cans.cansandroid.controls.CustomPicker;
 import my.com.cans.cansandroid.controls.CustomTextView;
 import my.com.cans.cansandroid.controls.DateTimePicker;
 import my.com.cans.cansandroid.fragments.BaseEditFragment;
 import my.com.cans.cansandroid.fragments.interfaces.OnSubmitListener;
 import my.com.cans.cansandroid.managers.Convert;
+import my.com.cans.cansandroid.managers.ValidateManager;
 import my.com.cans.cansandroid.objects.BaseFormField;
 import my.com.cans.cansandroid.objects.enums.FormField;
 import my.com.cans.cansandroid.objects.enums.FormGroup;
@@ -45,9 +55,20 @@ import retrofit2.Response;
  * Created by Rfeng on 06/04/2017.
  */
 
-public class EditFormActivity extends EditPageActivity implements OnSubmitListener, BaseEditFragment.OnBuildFieldListener, BaseEditFragment.OnBuildControlListener, BaseEditFragment.LabelWidthListener, View.OnClickListener {
+public class EditFormActivity extends EditPageActivity implements OnSubmitListener, BaseEditFragment.OnBuildFieldListener, BaseEditFragment.OnBuildControlListener, BaseEditFragment.LabelWidthListener, View.OnClickListener, CustomPicker.OnCustomPickerListerner, LocationListener {
     public String getKey() {
         return getIntent().getStringExtra("key");
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        LocationManager locationManager = (LocationManager)
+                getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
+        }
     }
 
     @Override
@@ -59,6 +80,14 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
                 MobileAPIResponse.FormResult request = new MobileAPIResponse().new FormResult();
                 List<MobileAPIResponse.FormData> formDatas = new ArrayList<>();
                 request.ID = getKey();
+                for (MobileAPIResponse.GetDevicesResult device : mDevices) {
+                    if (device.DeviceID.equals(item.deviceID)) {
+                        request.DeviceID = device.ID;
+                        break;
+                    }
+                }
+                if (ValidateManager.isEmptyOrNull(request.DeviceID))
+                    request.DeviceID = item.deviceID;
                 request.Tarikh = item.tarikh;
                 request.NamaRumahPam = item.namaRumahPam;
                 request.Wilayah = item.wilayah;
@@ -217,6 +246,7 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
             imgRosak.setTag(field);
             imgRosak.setOnClickListener(this);
         }
+
         return control;
     }
 
@@ -251,6 +281,8 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
 
     private MobileAPIResponse.FormResult mResult;
 
+    private MobileAPIResponse.GetDevicesResult[] mDevices;
+
     @Override
     protected void refresh(final SwipeRefreshLayout swipeRefreshLayout) {
         MobileAPIResponse.IdResult request = new MobileAPIResponse().new IdResult();
@@ -268,6 +300,23 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
                     if (resp != null && resp.Succeed) {
                         mResult = resp.Result;
                         EditFormActivity.super.refresh(swipeRefreshLayout);
+
+                        if (mResult.DeviceID != null) {
+                            MobileAPIResponse.CoordinateResult deviceIdModel = new MobileAPIResponse().new CoordinateResult();
+                            deviceIdModel.ID = mResult.DeviceID;
+                            new MyHTTP(EditFormActivity.this).call(MobileAPI.class).getDevices(deviceIdModel).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(EditFormActivity.this) {
+                                @Override
+                                public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
+                                    super.onResponse(call, response);
+
+                                    MobileAPIResponse.GetDevicesResponse resp = response.body();
+                                    if (resp != null && resp.Succeed) {
+                                        mDevices = resp.Result;
+                                        EditFormActivity.super.refresh(null);
+                                    }
+                                }
+                            });
+                        }
                     }
                 }
             });
@@ -277,10 +326,17 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
 
     @Override
     public Object buildModel() {
-        mFormModel = new FormModel();
-        if (mResult == null)
+        if (mFormModel != null)
             return mFormModel;
+
+        mFormModel = new FormModel();
+        if (mResult == null) {
+            mFormModel.tarikh = new Date();
+            return mFormModel;
+        }
+
         mFormModel.tarikh = mResult.Tarikh;
+        mFormModel.deviceID = mResult.DeviceID;
         mFormModel.namaRumahPam = mResult.NamaRumahPam;
         mFormModel.wilayah = mResult.Wilayah;
 
@@ -384,8 +440,94 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
     public BaseFormField buildField(BaseFormField field) {
         if (Suis.class.isAssignableFrom(field.field.getType())) {
             return new EditFormField(this, field.field, mFormModel);
+        } else if (field.name.equals("deviceID")) {
+            if (mDevices != null) {
+                field.choices = new ArrayList<>();
+                for (MobileAPIResponse.GetDevicesResult item : mDevices) {
+                    if (item.ID.equals(field.value) || ValidateManager.isEmptyOrNull(field.value)) {
+                        if (ValidateManager.isEmptyOrNull(field.value)) {
+                            mFormModel.deviceID = item.DeviceID;
+                            mFormModel.namaRumahPam = item.Kawasan;
+                            mFormModel.wilayah = item.Lokasi;
+                            loadVoltage(item.ID);
+                        }
+                        field.value = item.DeviceID;
+                    }
+                    field.choices.add(item.DeviceID);
+                }
+            }
+        } else if (field.name.equals("tarikh")) {
+            field.readonly = true;
         }
         return field;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (mDevices == null) {
+            MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
+            request.Latitude = location.getLatitude();
+            request.Longitude = location.getLongitude();
+            new MyHTTP(this).call(MobileAPI.class).getDevices(request).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(this) {
+                @Override
+                public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
+                    super.onResponse(call, response);
+
+                    MobileAPIResponse.GetDevicesResponse resp = response.body();
+                    if (resp != null && resp.Succeed) {
+                        mDevices = resp.Result;
+                        EditFormActivity.super.refresh(null);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+    }
+
+    @Override
+    public void onSelected(CustomPicker picker, String oldValue, String newValue) {
+        if (!ValidateManager.isEmptyOrNull(newValue) && !newValue.equals(oldValue)) {
+            for (MobileAPIResponse.GetDevicesResult item : mDevices) {
+                if (item.DeviceID.equals(newValue)) {
+                    mFormModel.namaRumahPam = item.Kawasan;
+                    mFormModel.wilayah = item.Lokasi;
+                    super.refresh(null);
+                    loadVoltage(item.ID);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void loadVoltage(String deviceID) {
+        MobileAPIResponse.IdResult idResult = new MobileAPIResponse().new IdResult();
+        idResult.ID = deviceID;
+        new MyHTTP(this).call(MobileAPI.class).getDeviceValue(idResult).enqueue(new BaseAPICallback<MobileAPIResponse.GetDeviceValueResponse>(this) {
+            @Override
+            public void onResponse(Call<MobileAPIResponse.GetDeviceValueResponse> call, Response<MobileAPIResponse.GetDeviceValueResponse> response) {
+                super.onResponse(call, response);
+                MobileAPIResponse.GetDeviceValueResponse resp = response.body();
+                if (resp != null && resp.Succeed) {
+                    MobileAPIResponse.GetDeviceValueResult result = resp.Result;
+                    if (result != null) {
+                        mFormModel.papanSuisUtamaLV = result.VoltageL1;
+                    }
+                }
+
+                EditFormActivity.super.refresh(null);
+            }
+        });
     }
 
     class EditFormField extends BaseFormField {
@@ -443,6 +585,10 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
         @NonNull
         @Order(1)
         public Date tarikh;
+        @NonNull
+        @Order(2)
+        @Description("Device ID")
+        public String deviceID;
         @NonNull
         @Order(2)
         @Description("Nama Rumah Pam & Kolam")

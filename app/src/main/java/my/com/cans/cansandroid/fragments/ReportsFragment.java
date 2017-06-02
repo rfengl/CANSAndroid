@@ -1,6 +1,14 @@
 package my.com.cans.cansandroid.fragments;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
@@ -22,35 +30,55 @@ import retrofit2.Response;
  * Created by Rfeng on 11/04/2017.
  */
 
-public class ReportsFragment extends BaseTableFragment implements OnTableInteractionListener {
+public class ReportsFragment extends BaseTableFragment implements OnTableInteractionListener, LocationListener {
 
     MobileAPIResponse.ReportResult[] mReports;
 
     @Override
-    public void refresh(final SwipeRefreshLayout swipeRefreshLayout) {
-        BaseActivity activity = (BaseActivity) this.getActivity();
-        new MyHTTP(activity).call(MobileAPI.class).getReports().enqueue(new BaseAPICallback<MobileAPIResponse.ReportsResponse>(activity) {
-            @Override
-            public void onResponse(Call<MobileAPIResponse.ReportsResponse> call, Response<MobileAPIResponse.ReportsResponse> response) {
-                super.onResponse(call, response);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-                MobileAPIResponse.ReportsResponse resp = response.body();
-                if (resp.Result != null)
-                    ReportsFragment.this.mReports = resp.Result;
-                ReportsFragment.super.refresh(swipeRefreshLayout);
-            }
-        });
+        Context context = this.getActivity();
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
+        }
+    }
+
+    @Override
+    public void refresh(final SwipeRefreshLayout swipeRefreshLayout) {
+        if (mCurrentLocation != null) {
+            BaseActivity activity = (BaseActivity) this.getActivity();
+            MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
+            request.Latitude = mCurrentLocation.getLatitude();
+            request.Longitude = mCurrentLocation.getLongitude();
+
+            new MyHTTP(activity).call(MobileAPI.class).getReports(request).enqueue(new BaseAPICallback<MobileAPIResponse.ReportsResponse>(activity) {
+                @Override
+                public void onResponse(Call<MobileAPIResponse.ReportsResponse> call, Response<MobileAPIResponse.ReportsResponse> response) {
+                    super.onResponse(call, response);
+
+                    MobileAPIResponse.ReportsResponse resp = response.body();
+                    if (resp.Result != null)
+                        ReportsFragment.this.mReports = resp.Result;
+                    ReportsFragment.super.refresh(swipeRefreshLayout);
+                }
+            });
+        } else
+            super.refresh(swipeRefreshLayout);
     }
 
     @Override
     protected List<BaseTableItem> buildItems() {
         List<BaseTableItem> items = new ArrayList<>();
-        for (MobileAPIResponse.ReportResult report : mReports) {
-            BaseTableItem item = new BaseTableItem();
-            item.itemId = report.ID;
-            item.title = new Convert(report.TarikhMula).to() + " - " + new Convert(report.TarikhTamat).to();
-            item.details = report.Lokasi;
-            items.add(item);
+        if (mReports != null) {
+            for (MobileAPIResponse.ReportResult report : mReports) {
+                BaseTableItem item = new BaseTableItem();
+                item.itemId = report.ID;
+                item.title = new Convert(report.TarikhMula).to() + " - " + new Convert(report.TarikhTamat).to();
+                item.details = report.Lokasi;
+                items.add(item);
+            }
         }
 
         return items;
@@ -62,5 +90,28 @@ public class ReportsFragment extends BaseTableFragment implements OnTableInterac
         Intent intent = new Intent(activity, EditReportActivity.class);
         intent.putExtra("key", (String) item.itemId);
         startActivity(intent);
+    }
+
+    Location mCurrentLocation;
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        refresh(null);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }

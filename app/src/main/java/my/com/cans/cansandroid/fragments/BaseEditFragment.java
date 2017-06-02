@@ -215,8 +215,9 @@ public class BaseEditFragment extends BaseFragment {
         else if (field.field.getType() == Date.class)
             editText = new DateTimePicker(mActivity);
         else if (field.choices != null && field.choices.size() > 0) {
-            editText = new CustomPicker(mActivity);
-            ((CustomPicker) editText).setup(getString(R.string.select), field.choices, field.icons);
+            CustomPicker picker = new CustomPicker(mActivity);
+            picker.setup(getString(R.string.select), field.choices, field.icons);
+            editText = picker;
         } else
             editText = new CustomEditText(mActivity);
 

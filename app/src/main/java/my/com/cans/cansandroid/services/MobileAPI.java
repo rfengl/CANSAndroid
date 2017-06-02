@@ -30,7 +30,7 @@ public interface MobileAPI {
     Call<MobileAPIResponse.FormResponse> getForm(@Body MobileAPIResponse.IdResult model);
 
     @POST("GetForms")
-    Call<MobileAPIResponse.FormsResponse> getForms();
+    Call<MobileAPIResponse.FormsResponse> getForms(@Body MobileAPIResponse.CoordinateResult model);
 
     @POST("UpdateReport")
     Call<MobileAPIResponse.ReportResponse> updateReport(@Body MobileAPIResponse.ReportResult model);
@@ -39,7 +39,13 @@ public interface MobileAPI {
     Call<MobileAPIResponse.ReportResponse> getReport(@Body MobileAPIResponse.IdResult model);
 
     @POST("GetReports")
-    Call<MobileAPIResponse.ReportsResponse> getReports();
+    Call<MobileAPIResponse.ReportsResponse> getReports(@Body MobileAPIResponse.CoordinateResult model);
+
+    @POST("GetDevices")
+    Call<MobileAPIResponse.GetDevicesResponse> getDevices(@Body MobileAPIResponse.CoordinateResult model);
+
+    @POST("GetDeviceValue")
+    Call<MobileAPIResponse.GetDeviceValueResponse> getDeviceValue(@Body MobileAPIResponse.IdResult model);
 
     @POST("UploadImages")
     @Multipart
