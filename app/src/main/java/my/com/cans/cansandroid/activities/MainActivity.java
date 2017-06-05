@@ -20,6 +20,7 @@ import my.com.cans.cansandroid.R;
 import my.com.cans.cansandroid.fragments.BaseFragment;
 import my.com.cans.cansandroid.fragments.FormsFragment;
 import my.com.cans.cansandroid.fragments.ReportsFragment;
+import my.com.cans.cansandroid.managers.MyLocationManager;
 import my.com.cans.cansandroid.objects.CANSInfo;
 import my.com.cans.cansandroid.objects.dbo.T_User;
 import my.com.cans.cansandroid.services.BaseAPICallback;
@@ -73,6 +74,8 @@ public class MainActivity extends BaseActivity
         T_User user = new CANSInfo(this).getUser();
         TextView userName = (TextView) header.findViewById(R.id.user_name);
         userName.setText(user.loginID);
+
+        new MyLocationManager(this).checkGPS();
     }
 
     @Override

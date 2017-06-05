@@ -29,6 +29,8 @@
     <string name="close">Close</string>
     <string name="confirm">Confirm</string>
     <string name="crop_pic">Crop Picture</string>
+    <string name="enable_gps_setting">Please enable the GPS from your setting</string>
+    <string name="gps_disabled">GPS Disabled</string>
     <string name="helper">Helper</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>

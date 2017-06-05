@@ -31,6 +31,7 @@ import my.com.cans.cansandroid.controls.DateTimePicker;
 import my.com.cans.cansandroid.fragments.BaseEditFragment;
 import my.com.cans.cansandroid.fragments.interfaces.OnSubmitListener;
 import my.com.cans.cansandroid.managers.Convert;
+import my.com.cans.cansandroid.managers.MyLocationManager;
 import my.com.cans.cansandroid.managers.ValidateManager;
 import my.com.cans.cansandroid.objects.BaseFormField;
 import my.com.cans.cansandroid.objects.interfaces.Description;
@@ -55,11 +56,11 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LocationManager locationManager = (LocationManager)
-                getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, this);
-        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
+        new MyLocationManager(this).getLocationManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
+        updateDevices();
     }
 
     @Override
@@ -284,6 +285,25 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
             });
     }
 
+    private void updateDevices() {
+        Location location = MyLocationManager.getCurrentLocation();
+        MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
+        request.Latitude = location.getLatitude();
+        request.Longitude = location.getLongitude();
+        new MyHTTP(this).call(MobileAPI.class).getDevices(request).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(this) {
+            @Override
+            public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
+                super.onResponse(call, response);
+
+                MobileAPIResponse.GetDevicesResponse resp = response.body();
+                if (resp != null && resp.Succeed) {
+                    mDevices = resp.Result;
+                    EditReportActivity.super.refresh(null);
+                }
+            }
+        });
+    }
+
     private ReportModel mModel;
 
     @Override
@@ -357,23 +377,8 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
 
     @Override
     public void onLocationChanged(Location location) {
-        if (mDevices == null) {
-            MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
-            request.Latitude = location.getLatitude();
-            request.Longitude = location.getLongitude();
-            new MyHTTP(this).call(MobileAPI.class).getDevices(request).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(this) {
-                @Override
-                public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
-                    super.onResponse(call, response);
-
-                    MobileAPIResponse.GetDevicesResponse resp = response.body();
-                    if (resp != null && resp.Succeed) {
-                        mDevices = resp.Result;
-                        EditReportActivity.super.refresh(null);
-                    }
-                }
-            });
-        }
+        MyLocationManager.setCurrentLocation(location);
+        updateDevices();
     }
 
     @Override
