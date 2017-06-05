@@ -19,15 +19,23 @@ import my.com.cans.cansandroid.activities.BaseActivity;
 
 public class MyLocationManager {
     static Location mCurrentLocation;
+
     public static Location getCurrentLocation() {
-        return mCurrentLocation;
+        if (mCurrentLocation != null)
+            return mCurrentLocation;
+        Location location = new Location("Custom Location");
+        location.setLatitude(3.012111);
+        location.setLongitude(101.512343);
+        return location;
     }
+
     public static void setCurrentLocation(Location location) {
         mCurrentLocation = location;
     }
 
     BaseActivity mContext;
     LocationManager mLocationManager;
+
     public MyLocationManager(BaseActivity context) {
         mContext = context;
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);

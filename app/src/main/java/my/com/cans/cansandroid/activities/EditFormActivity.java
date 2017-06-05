@@ -24,7 +24,6 @@ import android.widget.LinearLayout;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -67,7 +66,7 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
-        new MyLocationManager(this).getLocationManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        new MyLocationManager(this).getLocationManager().requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
 
         updateDevices();
     }
@@ -325,21 +324,23 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
 
     private void updateDevices() {
         Location location = MyLocationManager.getCurrentLocation();
-        MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
-        request.Latitude = location.getLatitude();
-        request.Longitude = location.getLongitude();
-        new MyHTTP(this).call(MobileAPI.class).getDevices(request).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(this) {
-            @Override
-            public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
-                super.onResponse(call, response);
+        if (mDevices == null && location != null) {
+            MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
+            request.Latitude = location.getLatitude();
+            request.Longitude = location.getLongitude();
+            new MyHTTP(this).call(MobileAPI.class).getDevices(request).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(this) {
+                @Override
+                public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
+                    super.onResponse(call, response);
 
-                MobileAPIResponse.GetDevicesResponse resp = response.body();
-                if (resp != null && resp.Succeed) {
-                    mDevices = resp.Result;
-                    EditFormActivity.super.refresh(null);
+                    MobileAPIResponse.GetDevicesResponse resp = response.body();
+                    if (resp != null && resp.Succeed) {
+                        mDevices = resp.Result;
+                        EditFormActivity.super.refresh(null);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     private FormModel mFormModel;

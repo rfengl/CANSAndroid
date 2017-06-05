@@ -41,7 +41,7 @@ public class ReportsFragment extends BaseTableFragment implements OnTableInterac
         BaseActivity context = (BaseActivity) this.getActivity();
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
-        new MyLocationManager(context).getLocationManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        new MyLocationManager(context).getLocationManager().requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
     }
 
     @Override
