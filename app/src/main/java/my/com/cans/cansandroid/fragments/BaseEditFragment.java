@@ -9,7 +9,6 @@ import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
@@ -282,9 +281,9 @@ public class BaseEditFragment extends BaseFragment {
         return getPixel(R.dimen.label_width);
     }
 
-    protected BaseFormField getField(String name) {
+    public BaseFormField getField(String name) {
         for (BaseFormField field : getFields()) {
-            if (field.name == name) {
+            if (field.name.equals(name)) {
                 return field;
             }
         }
