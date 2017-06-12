@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -93,19 +92,35 @@ public class BaseActivity extends AppCompatActivity implements SwipeRefreshLayou
 //        }
 //    }
 
-    public void confirm(int messageResId, final OnConfirmListener listener) {
-        confirm(R.string.confirm, messageResId, listener);
+    public void confirm(int messageResId, OnConfirmListener listener) {
+        confirm(messageResId, listener, null);
     }
 
-    public void confirm(int titleResId, int messageRedId, final OnConfirmListener listener) {
-        confirm(getString(titleResId), getString(messageRedId), listener);
+    public void confirm(int messageResId, OnConfirmListener listener, OnConfirmListener cancelListener) {
+        confirm(R.string.confirm, messageResId, listener, cancelListener);
     }
 
-    public void confirm(String message, final OnConfirmListener listener) {
-        confirm(getString(R.string.confirm), message, listener);
+    public void confirm(int titleResId, int messageRedId, OnConfirmListener listener) {
+        confirm(titleResId, messageRedId, listener, null);
     }
 
-    public void confirm(String title, String message, final OnConfirmListener listener) {
+    public void confirm(int titleResId, int messageRedId, OnConfirmListener listener, OnConfirmListener cancelListener) {
+        confirm(getString(titleResId), getString(messageRedId), listener, cancelListener);
+    }
+
+    public void confirm(String message, OnConfirmListener listener) {
+        confirm(message, listener, null);
+    }
+
+    public void confirm(String message, OnConfirmListener listener, OnConfirmListener cancelListener) {
+        confirm(getString(R.string.confirm), message, listener, cancelListener);
+    }
+
+    public void confirm(String title, String message, OnConfirmListener listener) {
+        confirm(title, message, listener, null);
+    }
+
+    public void confirm(String title, String message, final OnConfirmListener listener, final OnConfirmListener cancelListener) {
         new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
@@ -117,7 +132,13 @@ public class BaseActivity extends AppCompatActivity implements SwipeRefreshLayou
                         }
                     }
                 })
-                .setNegativeButton(android.R.string.no, null).show();
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if (cancelListener != null) {
+                            cancelListener.onConfirm(dialog, whichButton);
+                        }
+                    }
+                }).show();
     }
 
     public void popMessage(String title, String text) {

@@ -1,6 +1,8 @@
 package my.com.cans.cansandroid.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,12 +22,12 @@ import my.com.cans.cansandroid.R;
 import my.com.cans.cansandroid.fragments.BaseFragment;
 import my.com.cans.cansandroid.fragments.FormsFragment;
 import my.com.cans.cansandroid.fragments.ReportsFragment;
-import my.com.cans.cansandroid.managers.MyLocationManager;
+import my.com.cans.cansandroid.managers.CustomLocationManager;
 import my.com.cans.cansandroid.objects.CANSInfo;
 import my.com.cans.cansandroid.objects.dbo.T_User;
 import my.com.cans.cansandroid.services.BaseAPICallback;
-import my.com.cans.cansandroid.services.BaseAPIResponse;
 import my.com.cans.cansandroid.services.MobileAPI;
+import my.com.cans.cansandroid.services.MobileAPIResponse;
 import my.com.cans.cansandroid.services.MyHTTP;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -75,7 +77,7 @@ public class MainActivity extends BaseActivity
         TextView userName = (TextView) header.findViewById(R.id.user_name);
         userName.setText(user.loginID);
 
-        new MyLocationManager(this).checkGPS();
+        new CustomLocationManager(this).checkGPS();
     }
 
     @Override
@@ -95,17 +97,41 @@ public class MainActivity extends BaseActivity
     private boolean mIsLogined = false;
 
     protected void verifyUser() {
-        new MyHTTP(this).call(MobileAPI.class).verify().enqueue(new BaseAPICallback<BaseAPIResponse>(this) {
+        new MyHTTP(this).call(MobileAPI.class).verify().enqueue(new BaseAPICallback<MobileAPIResponse.VerifyResponse>(this) {
             @Override
-            public void onResponse(Call<BaseAPIResponse> call, Response<BaseAPIResponse> response) {
-                BaseAPIResponse resp = response.body();
-                if (resp.Succeed) {
-                    if (!mIsLogined)
-                        gotoForms();
-                    mIsLogined = true;
+            public void onResponse(Call<MobileAPIResponse.VerifyResponse> call, Response<MobileAPIResponse.VerifyResponse> response) {
+                final MobileAPIResponse.VerifyResponse resp = response.body();
+
+                if (!getString(R.string.version_no).equals(resp.Result.Version)) {
+                    confirm(getString(R.string.version_not_matched, resp.Result.Version), new OnConfirmListener() {
+                        @Override
+                        public void onConfirm(DialogInterface dialog, int which) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse(getString(R.string.new_apk_url)));
+                            startActivity(browserIntent);
+                        }
+                    }, new OnConfirmListener() {
+                        @Override
+                        public void onConfirm(DialogInterface dialog, int which) {
+                            if (resp.Succeed) {
+                                if (!mIsLogined)
+                                    gotoForms();
+                                mIsLogined = true;
+                            } else {
+                                mIsLogined = false;
+                                MainActivity.this.gotoLogin();
+                            }
+                        }
+                    });
                 } else {
-                    mIsLogined = false;
-                    MainActivity.this.gotoLogin();
+                    if (resp.Succeed) {
+                        if (!mIsLogined)
+                            gotoForms();
+                        mIsLogined = true;
+                    } else {
+                        mIsLogined = false;
+                        MainActivity.this.gotoLogin();
+                    }
                 }
             }
         });
@@ -194,9 +220,7 @@ public class MainActivity extends BaseActivity
         } else if (id == R.id.nav_report) {
             gotoReports();
         } else if (id == R.id.nav_monitor) {
-            Intent intent = new Intent(this, WebActivity.class);
-            intent.putExtra("title", "Facility Monitoring");
-            intent.putExtra("url", "http://cansiotapp.azurewebsites.net/PhoneMonitor");
+            Intent intent = new Intent(this, PhoneMonitorActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             CANSInfo db = new CANSInfo(this);

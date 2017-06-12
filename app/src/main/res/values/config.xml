@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="version_no">101</string>
+    <string name="new_apk_url">http://42.1.63.87/Download</string>
     <string name="date_format">dd MMM yyyy</string>
     <string name="time_format">HH:mm</string>
     <string name="date_time_format">dd MMM yyyy HH:mm</string>

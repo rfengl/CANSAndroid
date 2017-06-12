@@ -18,6 +18,7 @@ import my.com.cans.cansandroid.objects.dbo.T_User;
 import my.com.cans.cansandroid.services.BaseAPICallback;
 import my.com.cans.cansandroid.services.BaseAPIResponse;
 import my.com.cans.cansandroid.services.MobileAPI;
+import my.com.cans.cansandroid.services.MobileAPIResponse;
 import my.com.cans.cansandroid.services.MyHTTP;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -49,9 +50,9 @@ public class LoginActivity extends EditPageActivity implements OnSubmitListener,
             user.password = loginModel.Password;
             db.update(user);
 
-            new MyHTTP(this).call(MobileAPI.class).verify().enqueue(new BaseAPICallback<BaseAPIResponse>(this) {
+            new MyHTTP(this).call(MobileAPI.class).verify().enqueue(new BaseAPICallback<MobileAPIResponse.VerifyResponse>(this) {
                 @Override
-                public void onResponse(Call<BaseAPIResponse> call, Response<BaseAPIResponse> response) {
+                public void onResponse(Call<MobileAPIResponse.VerifyResponse> call, Response<MobileAPIResponse.VerifyResponse> response) {
                     super.onResponse(call, response);
 
                     BaseAPIResponse resp = response.body();

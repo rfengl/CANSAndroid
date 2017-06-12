@@ -1,13 +1,9 @@
 package my.com.cans.cansandroid.fragments;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
@@ -17,7 +13,7 @@ import my.com.cans.cansandroid.activities.BaseActivity;
 import my.com.cans.cansandroid.activities.EditFormActivity;
 import my.com.cans.cansandroid.fragments.interfaces.OnTableInteractionListener;
 import my.com.cans.cansandroid.managers.Convert;
-import my.com.cans.cansandroid.managers.MyLocationManager;
+import my.com.cans.cansandroid.managers.CustomLocationManager;
 import my.com.cans.cansandroid.objects.BaseTableItem;
 import my.com.cans.cansandroid.services.BaseAPICallback;
 import my.com.cans.cansandroid.services.MobileAPI;
@@ -38,14 +34,20 @@ public class FormsFragment extends BaseTableFragment implements OnTableInteracti
         super.onCreate(savedInstanceState);
 
         BaseActivity context = (BaseActivity) this.getActivity();
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            return;
-        new MyLocationManager(context).getLocationManager().requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+        mLocationManager = new CustomLocationManager(context);
+    }
+
+    CustomLocationManager mLocationManager;
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mLocationManager.destroy();
     }
 
     @Override
     public void refresh(final SwipeRefreshLayout swipeRefreshLayout) {
-        Location currentLocation = MyLocationManager.getCurrentLocation();
+        Location currentLocation = CustomLocationManager.getCurrentLocation();
         if (currentLocation != null) {
             BaseActivity activity = (BaseActivity) this.getActivity();
             MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
@@ -93,11 +95,8 @@ public class FormsFragment extends BaseTableFragment implements OnTableInteracti
         startActivity(intent);
     }
 
-//    Location mCurrentLocation;
-
     @Override
     public void onLocationChanged(Location location) {
-        MyLocationManager.setCurrentLocation(location);
         refresh(null);
     }
 

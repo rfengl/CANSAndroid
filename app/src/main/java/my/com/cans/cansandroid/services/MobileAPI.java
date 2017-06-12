@@ -15,7 +15,7 @@ import retrofit2.http.Part;
 
 public interface MobileAPI {
     @POST("Verify")
-    Call<BaseAPIResponse> verify();
+    Call<MobileAPIResponse.VerifyResponse> verify();
 
     @GET("TestInput")
     Call<MobileAPIResponse.FormResponse> testInput();

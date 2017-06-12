@@ -22,15 +22,15 @@ import my.com.cans.cansandroid.R;
 
 public class WebActivity extends BaseActivity {
 
-    private String title() {
+    protected String title() {
         return getIntent().getStringExtra("title");
     }
 
-    private String url() {
+    protected String url() {
         return getIntent().getStringExtra("url");
     }
 
-    private WebView webView;
+    protected WebView webView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,11 +65,11 @@ public class WebActivity extends BaseActivity {
             }
         });
 
-        webView.loadUrl(url());
+        String url = url();
+        if (url.isEmpty() == false)
+            webView.loadUrl(url);
+
         setContentView(webView);
-
-        reload();
-
     }
 
     @Override
@@ -86,20 +86,5 @@ public class WebActivity extends BaseActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void reload() {
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Do something after 5s = 5000ms
-                webView.loadUrl(url());
-                setContentView(webView);
-                Toast.makeText(WebActivity.this, "refresh", Toast.LENGTH_SHORT).show();
-                reload();
-                // mWebview.loadUrl("http://www.google.com");
-            }
-        }, 60 * 1000);
     }
 }

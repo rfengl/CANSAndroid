@@ -37,10 +37,12 @@
     <string name="no">No</string>
     <string name="photo">Photo</string>
     <string name="processing">Progressing... Please wait...</string>
+    <string name="refresh">Refresh</string>
     <string name="remarks">Remarks</string>
     <string name="save">Save</string>
     <string name="select">- Select -</string>
     <string name="the_field_is_required">This field is required</string>
     <string name="uploading_image">Uploading image...</string>
+    <string name="version_not_matched">New CANS Mobile App (version %s) with latest update was ready. Do you want to download and install it now?</string>
     <string name="yes">Yes</string>
 </resources>

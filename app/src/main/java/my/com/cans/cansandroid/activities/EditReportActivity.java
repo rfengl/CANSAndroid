@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -30,7 +29,7 @@ import my.com.cans.cansandroid.controls.DateTimePicker;
 import my.com.cans.cansandroid.fragments.BaseEditFragment;
 import my.com.cans.cansandroid.fragments.interfaces.OnSubmitListener;
 import my.com.cans.cansandroid.managers.Convert;
-import my.com.cans.cansandroid.managers.MyLocationManager;
+import my.com.cans.cansandroid.managers.CustomLocationManager;
 import my.com.cans.cansandroid.managers.ValidateManager;
 import my.com.cans.cansandroid.objects.BaseFormField;
 import my.com.cans.cansandroid.objects.interfaces.Description;
@@ -57,9 +56,17 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
-        new MyLocationManager(this).getLocationManager().requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+        mLocationManager = new CustomLocationManager(this);
 
         updateDevices();
+    }
+
+    CustomLocationManager mLocationManager;
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mLocationManager.destroy();
     }
 
     @Override
@@ -285,7 +292,7 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
     }
 
     private void updateDevices() {
-        Location location = MyLocationManager.getCurrentLocation();
+        Location location = CustomLocationManager.getCurrentLocation();
         if (mDevices == null && location != null) {
             MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
             request.Latitude = location.getLatitude();
@@ -378,7 +385,6 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
 
     @Override
     public void onLocationChanged(Location location) {
-        MyLocationManager.setCurrentLocation(location);
         updateDevices();
     }
 

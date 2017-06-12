@@ -22,6 +22,16 @@ public class MobileAPIResponse {
         public String ID;
     }
 
+    public class VerifyResponse extends BaseAPIResponse {
+        public VerifyResult Result;
+    }
+
+    public class VerifyResult {
+        public String Version;
+        public String Message;
+        public Date Date;
+    }
+
     public class CoordinateResult {
         public String ID;
         public Double Latitude;

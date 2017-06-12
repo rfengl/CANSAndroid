@@ -1,16 +1,12 @@
 package my.com.cans.cansandroid.activities;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.InputType;
 import android.util.TypedValue;
@@ -36,7 +32,7 @@ import my.com.cans.cansandroid.controls.DateTimePicker;
 import my.com.cans.cansandroid.fragments.BaseEditFragment;
 import my.com.cans.cansandroid.fragments.interfaces.OnSubmitListener;
 import my.com.cans.cansandroid.managers.Convert;
-import my.com.cans.cansandroid.managers.MyLocationManager;
+import my.com.cans.cansandroid.managers.CustomLocationManager;
 import my.com.cans.cansandroid.managers.ValidateManager;
 import my.com.cans.cansandroid.objects.BaseFormField;
 import my.com.cans.cansandroid.objects.enums.FormField;
@@ -61,15 +57,21 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
         return getIntent().getStringExtra("key");
     }
 
+    CustomLocationManager mLocationManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            return;
-        new MyLocationManager(this).getLocationManager().requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+        mLocationManager = new CustomLocationManager(this);
 
         updateDevices();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mLocationManager.destroy();
     }
 
     @Override
@@ -313,7 +315,7 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
 
     private void updateDevices() {
         if (mDevices == null && mDevicePicker != null) {
-            Location location = MyLocationManager.getCurrentLocation();
+            Location location = CustomLocationManager.getCurrentLocation();
             MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
             if (mResult != null && mResult.DeviceID != null)
                 request.ID = mResult.DeviceID;
@@ -483,7 +485,6 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
 
     @Override
     public void onLocationChanged(Location location) {
-        MyLocationManager.setCurrentLocation(location);
         updateDevices();
     }
 

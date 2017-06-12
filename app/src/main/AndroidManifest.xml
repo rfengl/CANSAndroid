@@ -39,6 +39,9 @@
             android:label="@string/fill_report"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:parentActivityName=".activities.MainActivity" />
+        <activity
+            android:name=".activities.PhoneMonitorActivity"
+            android:label="@string/monitoring" />
     </application>
 
 </manifest>
