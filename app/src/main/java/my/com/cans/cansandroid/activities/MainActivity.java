@@ -23,6 +23,7 @@ import my.com.cans.cansandroid.fragments.BaseFragment;
 import my.com.cans.cansandroid.fragments.FormsFragment;
 import my.com.cans.cansandroid.fragments.ReportsFragment;
 import my.com.cans.cansandroid.managers.CustomLocationManager;
+import my.com.cans.cansandroid.managers.ValidateManager;
 import my.com.cans.cansandroid.objects.CANSInfo;
 import my.com.cans.cansandroid.objects.dbo.T_User;
 import my.com.cans.cansandroid.services.BaseAPICallback;
@@ -103,7 +104,11 @@ public class MainActivity extends BaseActivity
                 final MobileAPIResponse.VerifyResponse resp = response.body();
 
                 if (!getString(R.string.version_no).equals(resp.Result.Version)) {
-                    confirm(getString(R.string.version_not_matched, resp.Result.Version), new OnConfirmListener() {
+                    String message = getString(R.string.version_not_matched, resp.Result.Version);
+                    if (ValidateManager.hasValue(resp.Result.Message))
+                        message = message + "\n\n" + resp.Result.Message;
+
+                    confirm(message, new OnConfirmListener() {
                         @Override
                         public void onConfirm(DialogInterface dialog, int which) {
                             Intent browserIntent = new Intent(Intent.ACTION_VIEW,
