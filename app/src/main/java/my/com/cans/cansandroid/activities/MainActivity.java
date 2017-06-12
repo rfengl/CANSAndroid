@@ -109,6 +109,7 @@ public class MainActivity extends BaseActivity
                             Intent browserIntent = new Intent(Intent.ACTION_VIEW,
                                     Uri.parse(getString(R.string.new_apk_url)));
                             startActivity(browserIntent);
+                            System.exit(0);
                         }
                     }, new OnConfirmListener() {
                         @Override
