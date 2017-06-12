@@ -103,7 +103,7 @@ public class MainActivity extends BaseActivity
             public void onResponse(Call<MobileAPIResponse.VerifyResponse> call, Response<MobileAPIResponse.VerifyResponse> response) {
                 final MobileAPIResponse.VerifyResponse resp = response.body();
 
-                if (!getString(R.string.version_no).equals(resp.Result.Version)) {
+                if (resp.Result != null && !getString(R.string.version_no).equals(resp.Result.Version)) {
                     String message = getString(R.string.version_not_matched, resp.Result.Version);
                     if (ValidateManager.hasValue(resp.Result.Message))
                         message = message + "\n\n" + resp.Result.Message;
