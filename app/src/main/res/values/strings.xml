@@ -10,8 +10,8 @@
     <string name="nilai_ampere">Nilai Ampere (A)</string>
     <string name="baik">Baik</string>
     <string name="fill_form">Pemeriksaan Peralatan Elektrikal</string>
-    <string name="fill_report">Breakdown Report</string>
-    <string name="monitoring">Facility Monitoring</string>
+    <string name="fill_report">Laporan Kerosakan</string>
+    <string name="monitoring">Pemantauan Fasiliti</string>
     <string name="rosak">Rosak</string>
     <string name="selesai">Selesai</string>
     <string name="sila_nyatakan_kerosakan">sila nyatakan kerosakan jika ada</string>
@@ -32,8 +32,8 @@
     <string name="enable_gps_setting">Please enable the GPS from your setting</string>
     <string name="gps_disabled">GPS Disabled</string>
     <string name="helper">Helper</string>
-    <string name="login">Login</string>
-    <string name="logout">Logout</string>
+    <string name="login">Daftar Masuk</string>
+    <string name="logout">Daftar Keluar</string>
     <string name="no">No</string>
     <string name="photo">Photo</string>
     <string name="processing">Progressing... Please wait...</string>
