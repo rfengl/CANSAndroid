@@ -67,13 +67,15 @@ public class PhoneMonitorActivity extends WebActivity implements LocationListene
                 loadContent();
                 reload();
             }
-        }, 5 * 1000);
+        }, 2 * 60 * 1000);
     }
 
     private void loadContent() {
         String url = url();
         if (!ValidateManager.isEmptyOrNull(url)) {
-            Toast.makeText(PhoneMonitorActivity.this, getString(R.string.refresh), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(PhoneMonitorActivity.this, getString(R.string.refresh), Toast.LENGTH_SHORT).show();
+            this.showProgress(true);
+
             webView.loadUrl(url);
             setContentView(webView);
         }
