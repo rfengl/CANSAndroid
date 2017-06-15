@@ -27,7 +27,7 @@ import retrofit2.Response;
  */
 
 public class FormsFragment extends BaseTableFragment implements OnTableInteractionListener, LocationListener {
-    MobileAPIResponse.FormResult[] mForms;
+    MobileAPIResponse.FormsResult[] mForms;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +75,7 @@ public class FormsFragment extends BaseTableFragment implements OnTableInteracti
     protected List<BaseTableItem> buildItems() {
         List<BaseTableItem> items = new ArrayList<>();
         if (mForms != null) {
-            for (MobileAPIResponse.FormResult form : mForms) {
+            for (MobileAPIResponse.FormsResult form : mForms) {
                 BaseTableItem item = new BaseTableItem();
                 item.itemId = form.ID;
                 item.title = new Convert(form.Tarikh).to(); //new Convert(form.getCreatedDate()).to();

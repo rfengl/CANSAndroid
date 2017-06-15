@@ -78,7 +78,7 @@ public class MainActivity extends BaseActivity
         TextView userName = (TextView) header.findViewById(R.id.user_name);
         userName.setText(user.loginID);
 
-        new CustomLocationManager(this).checkGPS();
+        new CustomLocationManager(this);
     }
 
     @Override

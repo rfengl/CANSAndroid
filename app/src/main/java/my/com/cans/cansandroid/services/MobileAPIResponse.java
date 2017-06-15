@@ -46,12 +46,19 @@ public class MobileAPIResponse {
         public String downloadPath;
     }
 
-    public class FormResponse extends BaseAPIResponse {
-        public FormResult Result;
+    public class FormsResponse extends BaseAPIResponse {
+        public FormsResult[] Result;
     }
 
-    public class FormsResponse extends BaseAPIResponse {
-        public FormResult[] Result;
+    public class FormsResult {
+        public String ID;
+        public String DeviceID;
+        public Date Tarikh;
+        public String NamaRumahPam;
+    }
+
+    public class FormResponse extends BaseAPIResponse {
+        public FormResult Result;
     }
 
     public class FormResult {

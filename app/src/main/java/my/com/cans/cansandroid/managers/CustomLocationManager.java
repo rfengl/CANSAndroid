@@ -42,6 +42,7 @@ public class CustomLocationManager implements LocationListener {
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
+        this.checkGPS();
         mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
     }
 
@@ -57,7 +58,7 @@ public class CustomLocationManager implements LocationListener {
 //        return mLocationManager;
 //    }
 
-    public void checkGPS() {
+    private void checkGPS() {
         if (!gpsEnabled() || !networkEnabled()) {
             mContext.confirm(R.string.gps_disabled, R.string.enable_gps_setting, new BaseActivity.OnConfirmListener() {
                 @Override
