@@ -20,8 +20,10 @@ import android.widget.LinearLayout;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import my.com.cans.cansandroid.R;
+import my.com.cans.cansandroid.controls.CustomEditText;
 import my.com.cans.cansandroid.controls.CustomImageView;
 import my.com.cans.cansandroid.controls.CustomPicker;
 import my.com.cans.cansandroid.controls.CustomTextView;
@@ -131,6 +133,8 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
 //        return item;
 //    }
 
+    CustomPicker mDevicePicker;
+
     @Override
     public View buildControl(BaseFormField field) {
         View control = field.control;
@@ -147,6 +151,8 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
             TextInputLayout layout = (TextInputLayout) field.control.findViewWithTag(field.name);
             DateTimePicker editText = (DateTimePicker) layout.getEditText();
             editText.setTimeEnabled(true);
+        } else if (field.name.equals("deviceID")) {
+            mDevicePicker = (CustomPicker) ((TextInputLayout) control.findViewWithTag(field.name)).getEditText();
         } else if (ActionTaken.class.isAssignableFrom(field.field.getType())) {
             if (field.value == null)
                 field.value = new ActionTaken();
@@ -269,34 +275,39 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
                     if (resp != null && resp.Succeed) {
                         mResult = resp.Result;
                         EditReportActivity.super.refresh(swipeRefreshLayout);
+                        updateDevices();
 
-                        if (mResult.DeviceID != null) {
-                            MobileAPIResponse.CoordinateResult deviceIdModel = new MobileAPIResponse().new CoordinateResult();
-                            deviceIdModel.ID = mResult.DeviceID;
-                            new MyHTTP(EditReportActivity.this).call(MobileAPI.class).getDevices(deviceIdModel).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(EditReportActivity.this) {
-                                @Override
-                                public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
-                                    super.onResponse(call, response);
-
-                                    MobileAPIResponse.GetDevicesResponse resp = response.body();
-                                    if (resp != null && resp.Succeed) {
-                                        mDevices = resp.Result;
-                                        EditReportActivity.super.refresh(null);
-                                    }
-                                }
-                            });
-                        }
+//                        if (mResult.DeviceID != null) {
+//                            MobileAPIResponse.CoordinateResult deviceIdModel = new MobileAPIResponse().new CoordinateResult();
+//                            deviceIdModel.ID = mResult.DeviceID;
+//                            new MyHTTP(EditReportActivity.this).call(MobileAPI.class).getDevices(deviceIdModel).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(EditReportActivity.this) {
+//                                @Override
+//                                public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
+//                                    super.onResponse(call, response);
+//
+//                                    MobileAPIResponse.GetDevicesResponse resp = response.body();
+//                                    if (resp != null && resp.Succeed) {
+//                                        mDevices = resp.Result;
+//                                        EditReportActivity.super.refresh(null);
+//                                    }
+//                                }
+//                            });
+//                        }
                     }
                 }
             });
     }
 
     private void updateDevices() {
-        Location location = CustomLocationManager.getCurrentLocation();
-        if (mDevices == null && location != null) {
+        if (mDevices == null && mDevicePicker != null) {
+            Location location = CustomLocationManager.getCurrentLocation();
             MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
-            request.Latitude = location.getLatitude();
-            request.Longitude = location.getLongitude();
+            if (mResult != null && mResult.DeviceID != null)
+                request.ID = mResult.DeviceID;
+            if (location != null) {
+                request.Latitude = location.getLatitude();
+                request.Longitude = location.getLongitude();
+            }
             new MyHTTP(this).call(MobileAPI.class).getDevices(request).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(this) {
                 @Override
                 public void onResponse(Call<MobileAPIResponse.GetDevicesResponse> call, Response<MobileAPIResponse.GetDevicesResponse> response) {
@@ -305,7 +316,25 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
                     MobileAPIResponse.GetDevicesResponse resp = response.body();
                     if (resp != null && resp.Succeed) {
                         mDevices = resp.Result;
-                        EditReportActivity.super.refresh(null);
+
+                        List<String> choices = new ArrayList<>();
+                        MobileAPIResponse.GetDevicesResult selectedDevice = null;
+                        for (MobileAPIResponse.GetDevicesResult item : mDevices) {
+                            choices.add(item.DeviceID);
+                            if (selectedDevice == null)
+                                selectedDevice = item;
+                            if (item.ID.equals(mModel.deviceID))
+                                selectedDevice = item;
+                        }
+                        mDevicePicker.setup(getString(R.string.select), choices);
+                        if (selectedDevice != null) {
+                            if (ValidateManager.isEmptyOrNull(mModel.deviceID)) {
+                                mModel.deviceID = selectedDevice.DeviceID;
+                                ((CustomEditText) getEditFragment().getField("kawasan").getEditControl()).setText(selectedDevice.Kawasan);
+                                ((CustomEditText) getEditFragment().getField("lokasi").getEditControl()).setText(selectedDevice.Lokasi);
+                            }
+                            mDevicePicker.setText(selectedDevice.DeviceID);
+                        }
                     }
                 }
             });
@@ -365,20 +394,8 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
         if (ActionTaken.class.isAssignableFrom(field.field.getType())) {
             return new EditReportField(this, field.field, mModel);
         } else if (field.name.equals("deviceID")) {
-            if (mDevices != null) {
-                field.choices = new ArrayList<>();
-                for (MobileAPIResponse.GetDevicesResult item : mDevices) {
-                    if (item.ID.equals(field.value) || ValidateManager.isEmptyOrNull(field.value)) {
-                        if (ValidateManager.isEmptyOrNull(field.value)) {
-                            mModel.deviceID = item.DeviceID;
-                            mModel.kawasan = item.Kawasan;
-                            mModel.lokasi = item.Lokasi;
-                        }
-                        field.value = item.DeviceID;
-                    }
-                    field.choices.add(item.DeviceID);
-                }
-            }
+            field.choices = new ArrayList<>();
+            field.choices.add(new Convert(field.value).to());
         }
         return field;
     }
