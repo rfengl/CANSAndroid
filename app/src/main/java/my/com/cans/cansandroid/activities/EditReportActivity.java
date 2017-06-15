@@ -124,12 +124,12 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
         }
     }
 
-    private MobileAPIResponse.FormData buildFormData(ActionTaken model) {
-        MobileAPIResponse.FormData item = new MobileAPIResponse().new FormData();
-        item.Baik = model.selected;
-//        item.Remarks = model.remarks;
-        return item;
-    }
+//    private MobileAPIResponse.FormData buildFormData(ActionTaken model) {
+//        MobileAPIResponse.FormData item = new MobileAPIResponse().new FormData();
+//        item.Baik = model.selected;
+////        item.Remarks = model.remarks;
+//        return item;
+//    }
 
     @Override
     public View buildControl(BaseFormField field) {
@@ -390,17 +390,14 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-
     }
 
     @Override
