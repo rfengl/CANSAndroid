@@ -295,8 +295,10 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
         MobileAPIResponse.IdResult request = new MobileAPIResponse().new IdResult();
         request.ID = getKey();
 
-        if (request.ID == null)
+        if (request.ID == null) {
             EditFormActivity.super.refresh(swipeRefreshLayout);
+            updateDevices();
+        }
         else
             new MyHTTP(this).call(MobileAPI.class).getForm(request).enqueue(new BaseAPICallback<MobileAPIResponse.FormResponse>(this) {
                 @Override

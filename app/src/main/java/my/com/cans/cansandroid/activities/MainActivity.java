@@ -1,17 +1,21 @@
 package my.com.cans.cansandroid.activities;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +26,6 @@ import my.com.cans.cansandroid.R;
 import my.com.cans.cansandroid.fragments.BaseFragment;
 import my.com.cans.cansandroid.fragments.FormsFragment;
 import my.com.cans.cansandroid.fragments.ReportsFragment;
-import my.com.cans.cansandroid.managers.CustomLocationManager;
 import my.com.cans.cansandroid.managers.ValidateManager;
 import my.com.cans.cansandroid.objects.CANSInfo;
 import my.com.cans.cansandroid.objects.dbo.T_User;
@@ -77,8 +80,19 @@ public class MainActivity extends BaseActivity
         T_User user = new CANSInfo(this).getUser();
         TextView userName = (TextView) header.findViewById(R.id.user_name);
         userName.setText(user.loginID);
+    }
 
-        new CustomLocationManager(this);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 123: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    gotoCurrentPage();
+                }
+                return;
+            }
+        }
     }
 
     @Override
@@ -119,27 +133,27 @@ public class MainActivity extends BaseActivity
                     }, new OnConfirmListener() {
                         @Override
                         public void onConfirm(DialogInterface dialog, int which) {
-                            if (resp.Succeed) {
-                                if (mIsReportOpened)
-                                    gotoReports();
-                                else
-                                    gotoForms();
-                            } else
+                            if (resp.Succeed)
+                                gotoCurrentPage();
+                            else
                                 MainActivity.this.gotoLogin();
                         }
                     });
                 } else {
-                    if (resp.Succeed) {
-                        if (mIsReportOpened)
-                            gotoReports();
-                        else
-                            gotoForms();
-                    } else {
+                    if (resp.Succeed)
+                        gotoCurrentPage();
+                    else
                         MainActivity.this.gotoLogin();
-                    }
                 }
             }
         });
+    }
+
+    protected void gotoCurrentPage() {
+        if (mIsReportOpened)
+            gotoReports();
+        else
+            gotoForms();
     }
 
     protected void gotoLogin() {
@@ -194,6 +208,7 @@ public class MainActivity extends BaseActivity
         transaction.replace(R.id.content_fragment, fragment, tag);
         transaction.commit();
     }
+
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.

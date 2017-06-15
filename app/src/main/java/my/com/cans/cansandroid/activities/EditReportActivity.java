@@ -56,8 +56,6 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            return;
         mLocationManager = new CustomLocationManager(this);
 
         updateDevices();
@@ -263,8 +261,10 @@ public class EditReportActivity extends EditPageActivity implements OnSubmitList
         MobileAPIResponse.IdResult request = new MobileAPIResponse().new IdResult();
         request.ID = getKey();
 
-        if (request.ID == null)
+        if (request.ID == null) {
             EditReportActivity.super.refresh(swipeRefreshLayout);
+            updateDevices();
+        }
         else
             new MyHTTP(this).call(MobileAPI.class).getReport(request).enqueue(new BaseAPICallback<MobileAPIResponse.ReportResponse>(this) {
                 @Override
