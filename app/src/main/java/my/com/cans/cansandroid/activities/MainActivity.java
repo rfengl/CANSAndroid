@@ -95,7 +95,7 @@ public class MainActivity extends BaseActivity
             mCurrentFragment.refresh(swipeRefreshLayout);
     }
 
-    private boolean mIsLogined = false;
+    static boolean mIsReportOpened = false;
 
     protected void verifyUser() {
         new MyHTTP(this).call(MobileAPI.class).verify().enqueue(new BaseAPICallback<MobileAPIResponse.VerifyResponse>(this) {
@@ -120,22 +120,21 @@ public class MainActivity extends BaseActivity
                         @Override
                         public void onConfirm(DialogInterface dialog, int which) {
                             if (resp.Succeed) {
-                                if (!mIsLogined)
+                                if (mIsReportOpened)
+                                    gotoReports();
+                                else
                                     gotoForms();
-                                mIsLogined = true;
-                            } else {
-                                mIsLogined = false;
+                            } else
                                 MainActivity.this.gotoLogin();
-                            }
                         }
                     });
                 } else {
                     if (resp.Succeed) {
-                        if (!mIsLogined)
+                        if (mIsReportOpened)
+                            gotoReports();
+                        else
                             gotoForms();
-                        mIsLogined = true;
                     } else {
-                        mIsLogined = false;
                         MainActivity.this.gotoLogin();
                     }
                 }
@@ -163,11 +162,13 @@ public class MainActivity extends BaseActivity
     }
 
     protected void gotoForms() {
+        mIsReportOpened = false;
         this.setTitle(R.string.fill_form);
         switchFragment("forms", new FormsFragment());
     }
 
     protected void gotoReports() {
+        mIsReportOpened = true;
         this.setTitle(R.string.fill_report);
         switchFragment("reports", new ReportsFragment());
     }
