@@ -115,50 +115,50 @@ public class MainActivity extends BaseActivity
             public void onResponse(Call<MobileAPIResponse.VerifyResponse> call, Response<MobileAPIResponse.VerifyResponse> response) {
                 final MobileAPIResponse.VerifyResponse resp = response.body();
 
-                String[] appVersionNos = getString(R.string.version_no).split("\\.");
-                String[] serverVersionNos = resp.Result.Version.split("\\.");
+                if (resp.Succeed) {
+                    String[] appVersionNos = getString(R.string.version_no).split("\\.");
+                    String[] serverVersionNos = resp.Result.Version.split("\\.");
 
-                boolean needUpdate = false;
-                for (int i = 0; i < appVersionNos.length; i++) {
-                    if (serverVersionNos.length > i) {
-                        int appVersionNo = new Convert(appVersionNos[i]).to(int.class);
-                        int serverVersionNo = new Convert(serverVersionNos[i]).to(int.class);
-                        if (appVersionNo < serverVersionNo) {
-                            needUpdate = true;
-                            break;
-                        } else if (appVersionNo > serverVersionNo)
-                            break;
+                    boolean needUpdate = false;
+                    for (int i = 0; i < appVersionNos.length; i++) {
+                        if (serverVersionNos.length > i) {
+                            int appVersionNo = new Convert(appVersionNos[i]).to(int.class);
+                            int serverVersionNo = new Convert(serverVersionNos[i]).to(int.class);
+                            if (appVersionNo < serverVersionNo) {
+                                needUpdate = true;
+                                break;
+                            } else if (appVersionNo > serverVersionNo)
+                                break;
+                        }
                     }
-                }
 
-                if (needUpdate) {
-                    String message = getString(R.string.version_not_matched, resp.Result.Version);
-                    if (ValidateManager.hasValue(resp.Result.Message))
-                        message = message + "\n\n" + resp.Result.Message;
+                    if (needUpdate) {
+                        String message = getString(R.string.version_not_matched, resp.Result.Version);
+                        if (ValidateManager.hasValue(resp.Result.Message))
+                            message = message + "\n\n" + resp.Result.Message;
 
-                    confirm(message, new OnConfirmListener() {
-                        @Override
-                        public void onConfirm(DialogInterface dialog, int which) {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse(getString(R.string.new_apk_url)));
-                            startActivity(browserIntent);
-                            System.exit(0);
-                        }
-                    }, new OnConfirmListener() {
-                        @Override
-                        public void onConfirm(DialogInterface dialog, int which) {
-                            if (resp.Succeed)
-                                gotoCurrentPage();
-                            else
-                                MainActivity.this.gotoLogin();
-                        }
-                    });
-                    return;
-                }
+                        confirm(message, new OnConfirmListener() {
+                            @Override
+                            public void onConfirm(DialogInterface dialog, int which) {
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                                        Uri.parse(getString(R.string.new_apk_url)));
+                                startActivity(browserIntent);
+                                System.exit(0);
+                            }
+                        }, new OnConfirmListener() {
+                            @Override
+                            public void onConfirm(DialogInterface dialog, int which) {
+                                if (resp.Succeed)
+                                    gotoCurrentPage();
+                                else
+                                    MainActivity.this.gotoLogin();
+                            }
+                        });
+                        return;
+                    }
 
-                if (resp.Succeed)
                     gotoCurrentPage();
-                else
+                } else
                     MainActivity.this.gotoLogin();
             }
         });
