@@ -32,17 +32,18 @@
             android:label="@string/monitoring" />
         <activity
             android:name=".activities.EditFormActivity"
-            android:label="@string/fill_form"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/fill_form"
             android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.EditReportActivity"
-            android:label="@string/fill_report"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/fill_report"
             android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.PhoneMonitorActivity"
-            android:label="@string/monitoring" />
+            android:label="@string/monitoring"
+            android:parentActivityName=".activities.MainActivity" />
     </application>
 
 </manifest>
