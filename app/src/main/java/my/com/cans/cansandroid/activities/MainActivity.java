@@ -1,6 +1,5 @@
 package my.com.cans.cansandroid.activities;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,14 +7,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +23,7 @@ import my.com.cans.cansandroid.R;
 import my.com.cans.cansandroid.fragments.BaseFragment;
 import my.com.cans.cansandroid.fragments.FormsFragment;
 import my.com.cans.cansandroid.fragments.ReportsFragment;
+import my.com.cans.cansandroid.managers.Convert;
 import my.com.cans.cansandroid.managers.ValidateManager;
 import my.com.cans.cansandroid.objects.CANSInfo;
 import my.com.cans.cansandroid.objects.dbo.T_User;
@@ -117,7 +115,23 @@ public class MainActivity extends BaseActivity
             public void onResponse(Call<MobileAPIResponse.VerifyResponse> call, Response<MobileAPIResponse.VerifyResponse> response) {
                 final MobileAPIResponse.VerifyResponse resp = response.body();
 
-                if (resp.Result != null && !getString(R.string.version_no).equals(resp.Result.Version)) {
+                String[] appVersionNos = getString(R.string.version_no).split("\\.");
+                String[] serverVersionNos = resp.Result.Version.split("\\.");
+
+                boolean needUpdate = false;
+                for (int i = 0; i < appVersionNos.length; i++) {
+                    if (serverVersionNos.length > i) {
+                        int appVersionNo = new Convert(appVersionNos[i]).to(int.class);
+                        int serverVersionNo = new Convert(serverVersionNos[i]).to(int.class);
+                        if (appVersionNo < serverVersionNo) {
+                            needUpdate = true;
+                            break;
+                        } else if (appVersionNo > serverVersionNo)
+                            break;
+                    }
+                }
+
+                if (needUpdate) {
                     String message = getString(R.string.version_not_matched, resp.Result.Version);
                     if (ValidateManager.hasValue(resp.Result.Message))
                         message = message + "\n\n" + resp.Result.Message;
@@ -139,12 +153,13 @@ public class MainActivity extends BaseActivity
                                 MainActivity.this.gotoLogin();
                         }
                     });
-                } else {
-                    if (resp.Succeed)
-                        gotoCurrentPage();
-                    else
-                        MainActivity.this.gotoLogin();
+                    return;
                 }
+
+                if (resp.Succeed)
+                    gotoCurrentPage();
+                else
+                    MainActivity.this.gotoLogin();
             }
         });
     }
