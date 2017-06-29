@@ -32,10 +32,15 @@ public class MobileAPIResponse {
         public Date Date;
     }
 
-    public class CoordinateResult {
+    public class CoordinateRequest {
         public String ID;
         public Double Latitude;
         public Double Longitude;
+    }
+
+    public class GetRecordsRequest extends CoordinateRequest {
+        public String LastID;
+        public Integer[] Devices;
     }
 
     public class UploadResponse extends BaseAPIResponse {
@@ -136,6 +141,10 @@ public class MobileAPIResponse {
         public Boolean Others;
         public Boolean Selesai;
         public Date CreatedDate;
+    }
+
+    public class GetDeviceIDsResponse extends  BaseAPIResponse {
+        public Integer[] Result;
     }
 
     public class GetDevicesResponse extends  BaseAPIResponse {

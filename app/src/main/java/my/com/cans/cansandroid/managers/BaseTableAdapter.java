@@ -10,6 +10,7 @@ import java.util.List;
 
 import my.com.cans.cansandroid.R;
 import my.com.cans.cansandroid.controls.CustomImageView;
+import my.com.cans.cansandroid.fragments.interfaces.OnBindViewHolderListener;
 import my.com.cans.cansandroid.fragments.interfaces.OnTableInteractionListener;
 import my.com.cans.cansandroid.objects.BaseTableItem;
 
@@ -17,10 +18,19 @@ public class BaseTableAdapter extends RecyclerView.Adapter<BaseTableAdapter.View
 
     protected final List<BaseTableItem> mValues;
     protected final OnTableInteractionListener mListener;
+    protected final OnBindViewHolderListener mBindViewHolder;
 
     public BaseTableAdapter(List<BaseTableItem> values, OnTableInteractionListener listener) {
         mValues = values;
         mListener = listener;
+        if (listener instanceof OnBindViewHolderListener)
+            mBindViewHolder = (OnBindViewHolderListener) mListener;
+        else
+            mBindViewHolder = null;
+    }
+
+    public void addItems(List<BaseTableItem> values) {
+        mValues.addAll(values);
     }
 
     @Override
@@ -77,6 +87,9 @@ public class BaseTableAdapter extends RecyclerView.Adapter<BaseTableAdapter.View
                 }
             }
         });
+
+        if (mBindViewHolder != null)
+            mBindViewHolder.onBindViewHolder(holder, position);
     }
 
     @Override

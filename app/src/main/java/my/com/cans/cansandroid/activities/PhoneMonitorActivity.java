@@ -84,7 +84,7 @@ public class PhoneMonitorActivity extends WebActivity implements LocationListene
     private void updateDevices() {
         Location location = CustomLocationManager.getCurrentLocation();
         if (location != null) {
-            MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
+            MobileAPIResponse.CoordinateRequest request = new MobileAPIResponse().new CoordinateRequest();
             request.Latitude = location.getLatitude();
             request.Longitude = location.getLongitude();
             new MyHTTP(this).call(MobileAPI.class).getDevices(request).enqueue(new BaseAPICallback<MobileAPIResponse.GetDevicesResponse>(this) {

@@ -12,8 +12,17 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 
+import java.util.Arrays;
+import java.util.List;
+
 import my.com.cans.cansandroid.R;
 import my.com.cans.cansandroid.activities.BaseActivity;
+import my.com.cans.cansandroid.services.BaseAPICallback;
+import my.com.cans.cansandroid.services.MobileAPI;
+import my.com.cans.cansandroid.services.MobileAPIResponse;
+import my.com.cans.cansandroid.services.MyHTTP;
+import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * Created by Rfeng on 05/06/2017.
@@ -21,14 +30,19 @@ import my.com.cans.cansandroid.activities.BaseActivity;
 
 public class CustomLocationManager implements LocationListener {
     static Location mCurrentLocation;
+    static Integer[] mDevices;
 
     public static Location getCurrentLocation() {
-        if (mCurrentLocation != null)
-            return mCurrentLocation;
-        Location location = new Location("Custom Location");
-        location.setLatitude(3.012111);
-        location.setLongitude(101.512343);
-        return location;
+        if (mCurrentLocation == null) {
+            mCurrentLocation = new Location("Custom Location");
+            mCurrentLocation.setLatitude(3.012111);
+            mCurrentLocation.setLongitude(101.512343);
+        }
+        return mCurrentLocation;
+    }
+
+    public static Integer[] getDevices() {
+        return mDevices;
     }
 
     BaseActivity mContext;
@@ -36,18 +50,29 @@ public class CustomLocationManager implements LocationListener {
     LocationManager mLocationManager;
 
     public CustomLocationManager(BaseActivity context) {
+        this(context, null);
+    }
+
+    public CustomLocationManager(BaseActivity context, LocationListener locationListener) {
         mContext = context;
-        if (mContext instanceof LocationListener)
-            mLocationListener = (LocationListener) mContext;
+        if (locationListener == null) {
+            if (mContext instanceof LocationListener)
+                mLocationListener = (LocationListener) mContext;
+        } else
+            mLocationListener = locationListener;
+
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.INTERNET,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
+            ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.INTERNET, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
             return;
         }
 
         this.checkGPS();
         mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+
+        if (mDevices == null && mLocationListener != null)
+            onDevicesChanged();
     }
 
     public void destroy() {
@@ -93,8 +118,47 @@ public class CustomLocationManager implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
-        if (mLocationListener != null)
-            mLocationListener.onLocationChanged(location);
+//        if (mLocationListener != null) {
+//
+//        }
+        onDevicesChanged();
+    }
+
+    private void onDevicesChanged() {
+        Location location = getCurrentLocation();
+        MobileAPIResponse.CoordinateRequest request = new MobileAPIResponse().new CoordinateRequest();
+        request.Latitude = location.getLatitude();
+        request.Longitude = location.getLongitude();
+
+        new MyHTTP(mContext).call(MobileAPI.class).getDeviceIDs(request).enqueue(new BaseAPICallback<MobileAPIResponse.GetDeviceIDsResponse>(mContext) {
+            @Override
+            public void onResponse(Call<MobileAPIResponse.GetDeviceIDsResponse> call, Response<MobileAPIResponse.GetDeviceIDsResponse> response) {
+                super.onResponse(call, response);
+
+                MobileAPIResponse.GetDeviceIDsResponse resp = response.body();
+                if (resp != null) {
+                    Integer[] devices = response.body().Result;
+
+                    if (devices != null) {
+                        if (mDevices == null || mDevices.length != devices.length) {
+                            mDevices = devices;
+                            if (mLocationListener != null)
+                                mLocationListener.onLocationChanged(mCurrentLocation);
+                        } else {
+                            List<Integer> list = Arrays.asList(mDevices);
+                            for (int device : devices) {
+                                if (list.contains(device)) {
+                                    mDevices = devices;
+                                    if (mLocationListener != null)
+                                        mLocationListener.onLocationChanged(mCurrentLocation);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override

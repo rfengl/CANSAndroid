@@ -318,7 +318,7 @@ public class EditFormActivity extends EditPageActivity implements OnSubmitListen
     private void updateDevices() {
         if (mDevices == null && mDevicePicker != null) {
             Location location = CustomLocationManager.getCurrentLocation();
-            MobileAPIResponse.CoordinateResult request = new MobileAPIResponse().new CoordinateResult();
+            MobileAPIResponse.CoordinateRequest request = new MobileAPIResponse().new CoordinateRequest();
             if (mResult != null && mResult.DeviceID != null)
                 request.ID = mResult.DeviceID;
             if (location != null) {

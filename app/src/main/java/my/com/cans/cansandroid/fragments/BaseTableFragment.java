@@ -26,6 +26,7 @@ public class BaseTableFragment extends BaseFragment {
     protected OnTableBuildItemsListener mBuildItems;
     protected RecyclerView mRecycleView;
     ProgressDialog mProgress;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -127,8 +128,18 @@ public class BaseTableFragment extends BaseFragment {
         this.hideProgress();
     }
 
+    BaseTableAdapter mAdapter;
+
     protected BaseTableAdapter buildAdapter(List<BaseTableItem> items, OnTableInteractionListener listener) {
-        return new BaseTableAdapter(items, listener);
+        mAdapter = new BaseTableAdapter(items, listener);
+        return mAdapter;
+    }
+
+    public void addItems(List<BaseTableItem> items) {
+        if (mAdapter != null) {
+            mAdapter.addItems(items);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     protected List<BaseTableItem> buildItems() {

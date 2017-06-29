@@ -188,6 +188,7 @@ public class BaseActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     public void showProgress(String message, boolean ifNotProgressing) {
+        if (this.isFinishing()) return;
         if (ifNotProgressing && mProgress != null) return;
 
         if (mProgress == null)
@@ -201,6 +202,7 @@ public class BaseActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     public void hideProgress() {
+        if (this.isFinishing()) return;
         if (mProgress != null) {
             mProgress.dismiss();
             mProgress = null;
