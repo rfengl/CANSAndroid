@@ -80,6 +80,8 @@ public class ReportsFragment extends BaseTableFragment implements OnTableInterac
         return buildItems(mReports);
     }
 
+    BaseTableItem mLastItem;
+
     private List<BaseTableItem> buildItems(MobileAPIResponse.ReportResult[] results) {
         List<BaseTableItem> items = new ArrayList<>();
         if (results != null) {
@@ -91,6 +93,12 @@ public class ReportsFragment extends BaseTableFragment implements OnTableInterac
                 items.add(item);
             }
         }
+
+        if (items.size() == 0)
+            mLastItem = null;
+        else
+            mLastItem = items.get(items.size() - 1);
+
         return items;
     }
 
@@ -125,16 +133,16 @@ public class ReportsFragment extends BaseTableFragment implements OnTableInterac
     public void onBindViewHolder(BaseTableAdapter.ViewHolder holder, int position) {
         if (mRecordsEnd == true)
             return;
-        MobileAPIResponse.ReportResult lastItem = this.mReports[this.mReports.length - 1];
-        if (holder.mItem.itemId.equals(lastItem.ID)) {
+        if (holder.mItem.itemId.equals(mLastItem.itemId)) {
             Integer[] devices = CustomLocationManager.getDevices();
             if (devices != null) {
                 BaseActivity activity = (BaseActivity) this.getActivity();
                 MobileAPIResponse.GetRecordsRequest request = new MobileAPIResponse().new GetRecordsRequest();
                 request.Devices = devices;
-                request.LastID = lastItem.ID;
+                request.LastID = new Convert(mLastItem.itemId).to();
 
                 if (activity != null) {
+                    mRecordsEnd = true;
                     new MyHTTP(activity).call(MobileAPI.class, true).getReports(request).enqueue(new BaseAPICallback<MobileAPIResponse.ReportsResponse>(activity) {
                         @Override
                         public void onResponse(Call<MobileAPIResponse.ReportsResponse> call, Response<MobileAPIResponse.ReportsResponse> response) {
@@ -142,9 +150,12 @@ public class ReportsFragment extends BaseTableFragment implements OnTableInterac
 
                             MobileAPIResponse.ReportsResponse resp = response.body();
                             if (resp != null && resp.Succeed) {
-                                mAdapter.addItems(buildItems(resp.Result));
-                                if (resp.Result.length < 10)
-                                    mRecordsEnd = true;
+                                List<BaseTableItem> items = buildItems(resp.Result);
+                                if (items.size() > 0) {
+                                    ReportsFragment.this.addItems(items);
+                                    mLastItem = items.get(items.size() - 1);
+                                }
+                                mRecordsEnd = resp.Result.length < 10;
                             }
                         }
                     });

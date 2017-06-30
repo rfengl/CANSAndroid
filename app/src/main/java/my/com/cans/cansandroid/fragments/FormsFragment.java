@@ -81,6 +81,8 @@ public class FormsFragment extends BaseTableFragment implements OnTableInteracti
         return buildItems(this.mForms);
     }
 
+    BaseTableItem mLastItem;
+
     private List<BaseTableItem> buildItems(MobileAPIResponse.FormsResult[] results) {
         List<BaseTableItem> items = new ArrayList<>();
         if (results != null) {
@@ -92,6 +94,12 @@ public class FormsFragment extends BaseTableFragment implements OnTableInteracti
                 items.add(item);
             }
         }
+
+        if (items.size() == 0)
+            mLastItem = null;
+        else
+            mLastItem = items.get(items.size() - 1);
+
         return items;
     }
 
@@ -126,16 +134,16 @@ public class FormsFragment extends BaseTableFragment implements OnTableInteracti
     public void onBindViewHolder(BaseTableAdapter.ViewHolder holder, int position) {
         if (mRecordsEnd == true)
             return;
-        MobileAPIResponse.FormsResult lastItem = this.mForms[this.mForms.length - 1];
-        if (holder.mItem.itemId.equals(lastItem.ID)) {
+        if (holder.mItem.itemId.equals(mLastItem.itemId)) {
             Integer[] devices = CustomLocationManager.getDevices();
             if (devices != null) {
                 BaseActivity activity = (BaseActivity) this.getActivity();
                 MobileAPIResponse.GetRecordsRequest request = new MobileAPIResponse().new GetRecordsRequest();
                 request.Devices = devices;
-                request.LastID = lastItem.ID;
+                request.LastID = new Convert(mLastItem.itemId).to();
 
                 if (activity != null) {
+                    mRecordsEnd = true;
                     new MyHTTP(activity).call(MobileAPI.class, true).getForms(request).enqueue(new BaseAPICallback<MobileAPIResponse.FormsResponse>(activity) {
                         @Override
                         public void onResponse(Call<MobileAPIResponse.FormsResponse> call, Response<MobileAPIResponse.FormsResponse> response) {
@@ -143,9 +151,12 @@ public class FormsFragment extends BaseTableFragment implements OnTableInteracti
 
                             MobileAPIResponse.FormsResponse resp = response.body();
                             if (resp != null && resp.Succeed) {
-                                FormsFragment.this.addItems(buildItems(resp.Result));
-                                if (resp.Result.length < 10)
-                                    mRecordsEnd = true;
+                                List<BaseTableItem> items = buildItems(resp.Result);
+                                if (items.size() > 0) {
+                                    FormsFragment.this.addItems(items);
+                                    mLastItem = items.get(items.size() - 1);
+                                }
+                                mRecordsEnd = resp.Result.length < 10;
                             }
                         }
                     });
