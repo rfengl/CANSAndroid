@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import my.com.cans.cansandroid.activities.BaseActivity;
+import my.com.cans.cansandroid.objects.MyApp;
 import my.com.cans.cansandroid.objects.dbo.DBOBase;
 import my.com.cans.cansandroid.objects.dbo.T_User;
 import my.com.cans.cansandroid.objects.interfaces.AutoIncrement;
@@ -32,8 +33,15 @@ public class DBHelper extends SQLiteOpenHelper {
     protected Context mContext;
 
     public DBHelper(Context context) {
-        super(context, "CarFixDB", null, 14);
+        super(initContext(context), "CarFixDB", null, 14);
         mContext = context;
+    }
+
+    private static Context initContext(Context context) {
+        if (context == null)
+            return MyApp.getContext();
+        else
+            return context;
     }
 
     public List<Class> getTableClasses() {

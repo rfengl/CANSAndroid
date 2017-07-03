@@ -20,6 +20,7 @@ import my.com.cans.cansandroid.activities.BaseActivity;
 import my.com.cans.cansandroid.managers.Convert;
 import my.com.cans.cansandroid.managers.MyGsonConverterFactory;
 import my.com.cans.cansandroid.objects.CANSInfo;
+import my.com.cans.cansandroid.objects.MyApp;
 import my.com.cans.cansandroid.objects.dbo.T_User;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;

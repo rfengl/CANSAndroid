@@ -118,13 +118,13 @@ public class CustomLocationManager implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
-//        if (mLocationListener != null) {
-//
-//        }
         onDevicesChanged();
     }
 
     private void onDevicesChanged() {
+        if (mContext == null)
+            return;
+
         Location location = getCurrentLocation();
         MobileAPIResponse.CoordinateRequest request = new MobileAPIResponse().new CoordinateRequest();
         request.Latitude = location.getLatitude();
